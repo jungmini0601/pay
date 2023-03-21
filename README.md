@@ -23,3 +23,8 @@
 - [ ] 계좌 조회
 - [ ] 계좌 삭제
 - [ ] 계좌 수정
+
+### <a href="https://github.com/jungmini0601/pay/wiki">사용자 시나리오</a>
+
+### <a href="https://www.erdcloud.com/d/QrHXMveNe3GPrFkdk">ERD</a>
+![image](https://user-images.githubusercontent.com/126523988/226529154-363c4a02-d62e-4dee-b0e5-d1e0a95d69fe.png)
