@@ -16,15 +16,17 @@ public class MemberDTO {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-
     public static class CreateMemberRequest {
+
         @NotBlank(message = "이름은 필수 입력 값입니다.")
         @Size(min = 1, max = 255, message = "이름은 1~255자리  문자열 입니다.")
         private String name;
+
         @Email(message = "이메일 형식으로 입력 해주세요")
         @NotBlank(message = "이름은 필수 입력 값입니다.")
         @Size(min = 3, max = 255, message = "이메일은 3~255자리 문자열 입니다.")
         private String email;
+
         @NotBlank(message = "이름은 필수 입력 값입니다.")
         @Size(min = 3, max = 255, message = "비밀번호는 3~255자리 문자열 입니다.")
         private String password;
@@ -43,6 +45,7 @@ public class MemberDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class CreateMemberResponse {
+
         private String email;
 
         private String name;

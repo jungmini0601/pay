@@ -11,11 +11,13 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Member {
+
     @Id
     private String email;
 
     @Column
     private String password;
+
     @Column
     private String name;
 
