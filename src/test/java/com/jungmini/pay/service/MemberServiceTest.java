@@ -1,0 +1,69 @@
+package com.jungmini.pay.service;
+
+import com.jungmini.pay.domain.Member;
+import com.jungmini.pay.exception.ErrorCode;
+import com.jungmini.pay.exception.PayException;
+import com.jungmini.pay.fixture.MemberFactory;
+import com.jungmini.pay.repository.MemberRepository;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+
+@ExtendWith(MockitoExtension.class)
+class MemberServiceTest {
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private MemberRepository memberRepository;
+
+    @InjectMocks
+    private MemberService memberService;
+
+    @Test
+    @DisplayName("회원가입 성공")
+    void signUp_success() {
+        Member member = MemberFactory.member();
+        given(passwordEncoder.encode(any())).willReturn("encodedPassword");
+        given(memberRepository.findById(any())).willReturn(Optional.empty());
+        given(memberRepository.save(any())).willReturn(
+                Member.builder()
+                        .email(member.getEmail())
+                        .password("encodedPassword")
+                        .name(member.getName())
+                        .build());
+
+        Member signUpMember = memberService.signUp(member);
+
+        assertThat(signUpMember.getEmail()).isEqualTo(member.getEmail());
+        assertThat(signUpMember.getPassword()).isEqualTo("encodedPassword");
+        assertThat(signUpMember.getName()).isEqualTo(member.getName());
+    }
+
+    @Test
+    @DisplayName("회원가입 실패 - 중복된 회원")
+    void signUp_fail_duplicated_member() {
+        Member member = MemberFactory.member();
+        given(memberRepository.findById(any())).willReturn(Optional.of(member));
+
+        PayException payException = assertThrows(PayException.class, () -> {
+            memberService.signUp(member);
+        });
+
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.MEMBER_DUPLICATED.toString());
+        assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.MEMBER_DUPLICATED.getDescription());
+    }
+
+}
