@@ -29,6 +29,9 @@ class MemberServiceTest {
     @Mock
     private MemberRepository memberRepository;
 
+    @Mock
+    private TokenService tokenService;
+
     @InjectMocks
     private MemberService memberService;
 
@@ -66,4 +69,42 @@ class MemberServiceTest {
         assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.MEMBER_DUPLICATED.getDescription());
     }
 
+    @Test
+    @DisplayName("로그인 성공")
+    void singin_success() {
+        Member member = MemberFactory.member();
+        given(memberRepository.findById(any())).willReturn(Optional.of(member));
+        given(passwordEncoder.verify(any(), any())).willReturn(true);
+        given(tokenService.generateToken(any())).willReturn("token");
+
+        String token = memberService.signin(member);
+        assertThat(token).isEqualTo("token");
+    }
+
+    @Test
+    @DisplayName("로그인 실패 - 존재하지 않는 유저")
+    void singin_fail_member_not_found() {
+        Member member = MemberFactory.member();
+        given(memberRepository.findById(any())).willReturn(Optional.empty());
+
+        PayException exception = assertThrows(PayException.class, () -> {
+            memberService.signin(member);
+        });
+
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.BAD_REQUEST.toString());
+    }
+
+    @Test
+    @DisplayName("로그인 실패 - 비밀번호 일치 X")
+    void singin_fail_password_mismatch() {
+        Member member = MemberFactory.member();
+        given(memberRepository.findById(any())).willReturn(Optional.of(member));
+        given(passwordEncoder.verify(any(), any())).willReturn(false);
+
+        PayException exception = assertThrows(PayException.class, () -> {
+            memberService.signin(member);
+        });
+
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.PASSWORD_MISMATCH.toString());
+    }
 }
