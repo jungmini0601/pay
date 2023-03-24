@@ -13,6 +13,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TokenService tokenService;
 
     public Member signUp(final Member member) {
         checkDuplicatedEmail(member.getEmail());
@@ -25,6 +26,20 @@ public class MemberService {
     private void checkDuplicatedEmail(final String email) {
         if(memberRepository.findById(email).isPresent()) {
             throw new PayException(ErrorCode.MEMBER_DUPLICATED);
+        }
+    }
+
+    public String signin(final Member signinRequestMember) {
+        Member findedMember = memberRepository.findById(signinRequestMember.getEmail())
+                .orElseThrow(() -> new PayException(ErrorCode.BAD_REQUEST));
+
+        checkPassword(signinRequestMember.getPassword(), findedMember.getPassword());
+        return tokenService.generateToken(findedMember.getEmail());
+    }
+
+    private void checkPassword(String plainPassword, String encodedPassword) {
+        if (!passwordEncoder.verify(plainPassword, encodedPassword)) {
+            throw new PayException(ErrorCode.PASSWORD_MISMATCH);
         }
     }
 }
