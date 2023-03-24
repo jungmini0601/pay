@@ -14,7 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -106,9 +105,9 @@ class MemberControllerTest {
                 .build();
 
         mvc.perform(
-                        post("/members/signin")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(memberRequest)))
+                post("/members/signin")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(memberRequest)))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.errorCode").value(ErrorCode.PASSWORD_MISMATCH.toString()))
                 .andExpect(jsonPath("$.message").value(ErrorCode.PASSWORD_MISMATCH.getDescription()))
@@ -121,13 +120,27 @@ class MemberControllerTest {
         Member member = MemberFactory.member();
 
         mvc.perform(
-                        post("/members/signin")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(member)))
+                post("/members/signin")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(member)))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.errorCode").value(ErrorCode.BAD_REQUEST.toString()))
                 .andExpect(jsonPath("$.message").value(ErrorCode.BAD_REQUEST.getDescription()))
                 .andDo(print());
     }
 
+    @DisplayName("통합테스트 - 로그인 실패 400번 입력 값 에러")
+    @Test
+    void signin_badRequest() throws Exception {
+        Member member = Member.builder().build();
+
+        mvc.perform(
+                post("/members/signin")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(member)))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.BAD_REQUEST.toString()))
+                .andExpect(jsonPath("$.errorFields").exists())
+                .andDo(print());
+    }
 }
