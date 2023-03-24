@@ -57,4 +57,22 @@ public class MemberDTO {
                     .build();
         }
     }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class SigninMemberRequest {
+
+        private String email;
+
+        private String password;
+
+        public Member toEntity() {
+            return Member.builder()
+                    .email(this.email)
+                    .password(this.password)
+                    .build();
+        }
+    }
 }
