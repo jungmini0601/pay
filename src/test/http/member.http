@@ -1,8 +1,19 @@
+### 회원가입
 POST http://localhost:8080/members
 Content-Type: application/json
 
 {
   "name": "test",
   "password": "123456789",
-  "email": "test@test.com"
+  "email": "test2@test.com"
+}
+
+### 로그인
+POST http://localhost:8080/members/signin
+Content-Type: application/json
+
+{
+"name": "test",
+"password": "123456789",
+"email": "test1@test.com"
 }

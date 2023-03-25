@@ -1,0 +1,11 @@
+### 친구신청
+POST http://localhost:8080/friends/request
+Auth: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0MUB0ZXN0LmNvbSIsImV4cCI6MTY3OTczOTIyMn0.Ylkk1-ouwKqRKUdJHayQL_cllS_HNwx_ECjhncv9vqFqGMe-Aodnc_3KX4CcOpSGXsAms7yxtm4ZHA2mJsuiZw
+Content-Type: application/json
+
+{
+  "name": "test",
+  "password": "123456789",
+  "email": "test2@test.com"
+}
+
