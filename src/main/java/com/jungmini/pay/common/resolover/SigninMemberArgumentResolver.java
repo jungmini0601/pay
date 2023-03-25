@@ -19,6 +19,7 @@ public class SigninMemberArgumentResolver implements HandlerMethodArgumentResolv
 
     private final MemberRepository memberRepository;
     private final TokenService tokenService;
+
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.hasParameterAnnotation(SigninMember.class);

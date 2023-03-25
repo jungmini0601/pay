@@ -24,18 +24,21 @@ public class FriendController {
             @SigninMember Member signinMember
     ) {
 
-        friendService.requestFriend(FriendRequest
+        Member recipient = Member
+                .builder()
+                .email(createFriendRequest.getEmail())
+                .build();
+
+        FriendRequest friendRequest = FriendRequest
                 .builder()
                 .requester(signinMember)
-                .recipient(Member
-                        .builder()
-                        .email(createFriendRequest.getEmail())
-                        .build())
-                .build());
+                .recipient(recipient)
+                .build();
+
+        friendService.requestFriend(friendRequest);
 
         return ResponseEntity.ok(FriendDTO.CreateFriendResponse.builder()
                 .message(String.format("%s님에게 친구 요청을 보냈습니다.", createFriendRequest.getEmail()))
                 .build());
     }
-
 }
