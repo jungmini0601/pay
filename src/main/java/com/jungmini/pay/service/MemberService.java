@@ -37,7 +37,7 @@ public class MemberService {
      */
     public String signin(final Member signinRequestMember) {
         Member findedMember = memberRepository.findById(signinRequestMember.getEmail())
-                .orElseThrow(() -> new PayException(ErrorCode.BAD_REQUEST));
+                .orElseThrow(() -> new PayException(ErrorCode.MEMBER_NOT_FOUND));
 
         checkPassword(signinRequestMember.getPassword(), findedMember.getPassword());
         return tokenService.generateToken(findedMember.getEmail());

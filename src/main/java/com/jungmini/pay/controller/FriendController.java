@@ -7,10 +7,14 @@ import com.jungmini.pay.domain.Member;
 import com.jungmini.pay.service.FriendService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -40,5 +44,18 @@ public class FriendController {
         return ResponseEntity.ok(FriendDTO.CreateFriendResponse.builder()
                 .message(String.format("%s님에게 친구 요청을 보냈습니다.", createFriendRequest.getEmail()))
                 .build());
+    }
+
+    @GetMapping("/friends/request")
+    public ResponseEntity<List<FriendDTO.FindFriendRequestResponse>> findFriendRequests(
+            Pageable pageable,
+            @SigninMember Member signinMember
+    ) {
+        List<FriendDTO.FindFriendRequestResponse> requesters =
+                friendService.findRequests(pageable, signinMember).stream()
+                .map(friendRequest -> FriendDTO.FindFriendRequestResponse.from(friendRequest.getRequester()))
+                .toList();
+
+        return ResponseEntity.ok(requesters);
     }
 }

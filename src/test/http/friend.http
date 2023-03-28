@@ -1,5 +1,16 @@
 ### 친구신청
 POST http://localhost:8080/friends/request
+Auth: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZXhwIjoxNjc5OTk3MzUzfQ.JcN6dwpxu90xUCHHjOLtzjFxvaQpB5actPvOPUw3fMdxdBOaz7o9kSmHClmxJCddiNn2QHHIMnXcaxLFQt5dqQ
+Content-Type: application/json
+
+{
+  "name": "test",
+  "password": "123456789",
+  "email": "test@test.com"
+}
+
+### 친구목록 조회
+POST http://localhost:8080/friends/request
 Auth: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0MUB0ZXN0LmNvbSIsImV4cCI6MTY3OTczOTIyMn0.Ylkk1-ouwKqRKUdJHayQL_cllS_HNwx_ECjhncv9vqFqGMe-Aodnc_3KX4CcOpSGXsAms7yxtm4ZHA2mJsuiZw
 Content-Type: application/json
 

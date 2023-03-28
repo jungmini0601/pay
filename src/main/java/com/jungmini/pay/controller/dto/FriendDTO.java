@@ -10,6 +10,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 public class FriendDTO {
 
     @Getter
@@ -36,5 +38,22 @@ public class FriendDTO {
     public static class CreateFriendResponse {
 
         private String message;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class FindFriendRequestResponse {
+        private String email;
+        private String name;
+        private LocalDateTime createdAt;
+
+        public static FindFriendRequestResponse from(Member requester) {
+            return FindFriendRequestResponse.builder()
+                    .email(requester.getEmail())
+                    .name(requester.getName())
+                    .build();
+        }
     }
 }

@@ -125,8 +125,8 @@ class MemberControllerTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(member)))
                 .andExpect(status().is4xxClientError())
-                .andExpect(jsonPath("$.errorCode").value(ErrorCode.BAD_REQUEST.toString()))
-                .andExpect(jsonPath("$.message").value(ErrorCode.BAD_REQUEST.getDescription()))
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.MEMBER_NOT_FOUND.toString()))
+                .andExpect(jsonPath("$.message").value(ErrorCode.MEMBER_NOT_FOUND.getDescription()))
                 .andDo(print());
     }
 
