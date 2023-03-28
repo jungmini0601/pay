@@ -44,6 +44,7 @@ class MemberControllerTest {
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.name").value(member.getName()))
                 .andExpect(jsonPath("$.email").value(member.getEmail()))
+                .andExpect(jsonPath("$.createdAt").exists())
                 .andDo(print());
     }
 
