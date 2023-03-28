@@ -53,6 +53,7 @@ public class FriendDTO {
             return FindFriendRequestResponse.builder()
                     .email(requester.getEmail())
                     .name(requester.getName())
+                    .createdAt(requester.getCreatedAt())
                     .build();
         }
     }

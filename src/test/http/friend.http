@@ -1,6 +1,6 @@
 ### 친구신청
 POST http://localhost:8080/friends/request
-Auth: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZXhwIjoxNjc5OTk3MzUzfQ.JcN6dwpxu90xUCHHjOLtzjFxvaQpB5actPvOPUw3fMdxdBOaz7o9kSmHClmxJCddiNn2QHHIMnXcaxLFQt5dqQ
+Auth: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0M0B0ZXN0LmNvbSIsImV4cCI6MTY3OTk5ODc4MH0.92qxa7vw7bC-eB6o2sWpb_aNdTwnihfyqz73XuAfjgGx5nAIEOSSBMISOSAN9TCI9ifAet2VSwSvQpZjKL1JGw
 Content-Type: application/json
 
 {
@@ -10,13 +10,7 @@ Content-Type: application/json
 }
 
 ### 친구목록 조회
-POST http://localhost:8080/friends/request
-Auth: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0MUB0ZXN0LmNvbSIsImV4cCI6MTY3OTczOTIyMn0.Ylkk1-ouwKqRKUdJHayQL_cllS_HNwx_ECjhncv9vqFqGMe-Aodnc_3KX4CcOpSGXsAms7yxtm4ZHA2mJsuiZw
+GET http://localhost:8080/friends/request?size=4
+Auth: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZXhwIjoxNjc5OTk4ODIyfQ.DT-Ob560ZpaIaKmYWf-b7LkGg6pGq2v9Jrm3e-AtA_UVwhX0PouG-5Uk8M9IqFtEJLZMjsl6DTZpQ7HHbvRNJg
 Content-Type: application/json
-
-{
-  "name": "test",
-  "password": "123456789",
-  "email": "test2@test.com"
-}
 
