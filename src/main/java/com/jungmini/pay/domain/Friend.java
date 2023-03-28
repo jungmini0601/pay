@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Friend {
+public class Friend extends BaseTimeEntity {
     @Id
     @Column(name = "friend_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

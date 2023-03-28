@@ -6,6 +6,7 @@ import com.jungmini.pay.exception.PayException;
 import com.jungmini.pay.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -15,12 +16,12 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
 
+    @Transactional(readOnly = true)
     public Member signUp(final Member member) {
         checkDuplicatedEmail(member.getEmail());
         final String encodedPassword = passwordEncoder.encode(member.getPassword());
         final Member passwordEncodedMember = member.encodePassword(encodedPassword);
-        memberRepository.save(passwordEncodedMember);
-        return passwordEncodedMember;
+        return memberRepository.save(passwordEncodedMember);
     }
 
     private void checkDuplicatedEmail(final String email) {
@@ -29,6 +30,11 @@ public class MemberService {
         }
     }
 
+    /**
+     * 읽기 전용으로 트랜잭션을 걸면 스프링 프레임워크가 하이버네이트 세션 플러시 모드를 MANUAL로 설정한다.
+     * 강제로 플러시를 호출하지 않는 한 플러시가 일어나지 않는다.
+     * 엔티티의 등록 수정 삭제가 동작하지 않고 변경 감지를 위한 스냅샷을 사용하지 않아서 성능이 향상된다.
+     */
     public String signin(final Member signinRequestMember) {
         Member findedMember = memberRepository.findById(signinRequestMember.getEmail())
                 .orElseThrow(() -> new PayException(ErrorCode.BAD_REQUEST));

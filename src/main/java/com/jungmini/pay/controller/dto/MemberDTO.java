@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 public class MemberDTO {
 
     @Getter
@@ -49,10 +51,13 @@ public class MemberDTO {
 
         private String name;
 
+        private LocalDateTime createdAt;
+
         public static CreateMemberResponse from(Member member) {
             return CreateMemberResponse.builder()
                     .name(member.getName())
                     .email(member.getEmail())
+                    .createdAt(member.getCreatedAt())
                     .build();
         }
     }
