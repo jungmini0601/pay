@@ -16,7 +16,7 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
 
-    @Transactional(readOnly = true)
+    @Transactional
     public Member signUp(final Member member) {
         checkDuplicatedEmail(member.getEmail());
         final String encodedPassword = passwordEncoder.encode(member.getPassword());
