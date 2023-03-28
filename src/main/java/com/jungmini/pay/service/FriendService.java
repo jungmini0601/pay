@@ -7,9 +7,12 @@ import com.jungmini.pay.exception.PayException;
 import com.jungmini.pay.repository.FriendRepository;
 import com.jungmini.pay.repository.FriendRequestRepository;
 import com.jungmini.pay.repository.MemberRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -21,16 +24,30 @@ public class FriendService {
 
     @Transactional
     public FriendRequest requestFriend(FriendRequest request) {
+        validationFriendRequest(request);
+
         Member recipient = memberRepository.findById(request.getRecipient().getEmail())
-                .orElseThrow(() -> new PayException(ErrorCode.BAD_REQUEST));
+                .orElseThrow(() -> new PayException(ErrorCode.MEMBER_NOT_FOUND));
 
         Member requester = memberRepository.findById(request.getRequester().getEmail())
-                .orElseThrow(() -> new PayException(ErrorCode.BAD_REQUEST));
+                .orElseThrow(() -> new PayException(ErrorCode.MEMBER_NOT_FOUND));
 
         checkExistsFriendFrom(recipient, requester);
         checkExistsFriendRequestFrom(recipient, requester);
 
         return friendRequestRepository.save(FriendRequest.from(requester, recipient));
+    }
+
+    @Transactional(readOnly = true)
+    public List<FriendRequest> findRequests(Pageable pageable, Member recipient) {
+        return friendRequestRepository
+                .findFriendRequestByRecipientOrderByCreatedAtDesc(recipient, pageable);
+    }
+
+    private void validationFriendRequest(FriendRequest request) {
+        if (request.getRequester().getEmail().equals(request.getRecipient().getEmail())) {
+            throw new PayException(ErrorCode.SELF_FRIEND_REQUEST);
+        }
     }
 
     private void checkExistsFriendRequestFrom(Member recipient, Member requester) {

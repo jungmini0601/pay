@@ -1,9 +1,11 @@
 package com.jungmini.pay.service;
 
 import com.jungmini.pay.domain.FriendRequest;
+import com.jungmini.pay.domain.Member;
 import com.jungmini.pay.exception.ErrorCode;
 import com.jungmini.pay.exception.PayException;
 import com.jungmini.pay.fixture.FriendRequestFactory;
+import com.jungmini.pay.fixture.MemberFactory;
 import com.jungmini.pay.repository.FriendRepository;
 import com.jungmini.pay.repository.FriendRequestRepository;
 import com.jungmini.pay.repository.MemberRepository;
@@ -121,7 +123,27 @@ public class FriendServiceTest {
             friendService.requestFriend(friendRequest);
         });
 
-        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.BAD_REQUEST.toString());
-        assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.BAD_REQUEST.getDescription().toString());
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.MEMBER_NOT_FOUND.toString());
+        assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.MEMBER_NOT_FOUND.getDescription().toString());
     }
+
+
+    @Test
+    @DisplayName("친구 요청 실패 - 자기 자신에게 친구 요청 하는 경우")
+    void createFriendRequest_self_request() {
+        Member recipient = MemberFactory.member();
+        Member requester = MemberFactory.member();
+        FriendRequest friendRequest = FriendRequest.builder()
+                .requester(requester)
+                .recipient(recipient)
+                .build();
+
+        PayException payException = assertThrows(PayException.class, () -> {
+            friendService.requestFriend(friendRequest);
+        });
+
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.SELF_FRIEND_REQUEST.toString());
+        assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.SELF_FRIEND_REQUEST.getDescription().toString());
+    }
+
 }

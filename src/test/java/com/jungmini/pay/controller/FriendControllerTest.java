@@ -22,6 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -145,6 +146,24 @@ public class FriendControllerTest {
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.errorCode").value(ErrorCode.BAD_REQUEST.toString()))
                 .andExpect(jsonPath("$.errorFields").exists())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("통합 테스트 성공 - 친구 요청 조회")
+    void getFriendRequests_success() throws Exception {
+        FriendRequest friendRequest = FriendRequestFactory.friendRequest();
+        Member requester = friendRequest.getRequester();
+        Member recipient = friendRequest.getRecipient();
+        memberService.signUp(requester);
+        memberService.signUp(recipient);
+        friendService.requestFriend(friendRequest);
+        String token = tokenService.generateToken(friendRequest.getRecipient().getEmail());
+
+        mvc.perform(
+                    get("/friends/request")
+                    .header("Auth", token))
+                .andExpect(status().is2xxSuccessful())
                 .andDo(print());
     }
 }

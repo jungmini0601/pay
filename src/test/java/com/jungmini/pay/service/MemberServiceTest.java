@@ -91,7 +91,7 @@ class MemberServiceTest {
             memberService.signin(member);
         });
 
-        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.BAD_REQUEST.toString());
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.MEMBER_NOT_FOUND.toString());
     }
 
     @Test
