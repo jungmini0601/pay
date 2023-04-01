@@ -54,6 +54,7 @@ public class FriendService {
 
         Friend savedFriend = friendRepository.save(Friend.from(friendRequest));
         friendRequestRepository.deleteById(friendRequestId);
+
         return savedFriend;
     }
 

@@ -179,7 +179,6 @@ public class FriendControllerTest {
 
         String token = tokenService.generateToken(recipient.getEmail());
 
-
         mvc.perform(post("/friends/requests/accept/1")
                     .header("Auth", token))
                 .andExpect(status().is2xxSuccessful())
