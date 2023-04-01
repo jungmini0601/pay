@@ -55,6 +55,17 @@ public class FriendController {
                 .message(String.format("%s님의 친구 요청 수락 완료", friend.getRequester()))
                 .build());
     }
+    @PostMapping("/friends/requests/deny/{id}")
+    public ResponseEntity<FriendDTO.DenyFriendRequestResponse> denyFriendRequest(
+            @PathVariable long id,
+            @SigninMember Member signinMember
+    ) {
+        FriendRequest friendRequest = friendService.denyFriendRequest(id);
+        return ResponseEntity.ok(FriendDTO.DenyFriendRequestResponse
+                .builder()
+                .message(String.format("%s님의 친구 요청 거절 완료", friendRequest.getRequester().getEmail()))
+                .build());
+    }
 
 
     @GetMapping("/friends/request")

@@ -148,7 +148,7 @@ public class FriendServiceTest {
 
     @Test
     @DisplayName("친구 요청 수락 - 성공")
-    void acceptRequest_success() {
+    void acceptFriendRequest_success() {
         FriendRequest friendRequest = FriendRequestFactory.friendRequest();
         Friend friend = Friend.from(friendRequest);
 
@@ -166,12 +166,40 @@ public class FriendServiceTest {
 
     @Test
     @DisplayName("친구 요청 수락 - 실패 친구 요청 못 찾는 경우")
-    void acceptRequest_fail_friend_request_not_found() {
+    void acceptFriendRequest_fail_friend_request_not_found() {
         given(friendRequestRepository.findById(any()))
                 .willReturn(Optional.empty());
 
         PayException payException = assertThrows(PayException.class,
                 () -> friendService.acceptFriendRequest(1L));
+
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.BAD_REQUEST.toString());
+        assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.BAD_REQUEST.getDescription());
+    }
+
+    @Test
+    @DisplayName("친구 요청 거절 - 성공")
+    void denyFriendRequest_success() {
+        FriendRequest friendRequest = FriendRequestFactory.friendRequest();
+        Friend friend = Friend.from(friendRequest);
+
+        given(friendRequestRepository.findById(any()))
+                .willReturn(Optional.of(friendRequest));
+
+        FriendRequest deletedFriendRequest = friendService.denyFriendRequest(1L);
+
+        assertThat(deletedFriendRequest.getRequester()).isEqualTo(friend.getRequester());
+        assertThat(deletedFriendRequest.getRecipient()).isEqualTo(friend.getRecipient());
+    }
+
+    @Test
+    @DisplayName("친구 요청 실패 - 실패 친구 요청 못 찾는 경우")
+    void denyFriendRequest_fail_friend_request_not_found() {
+        given(friendRequestRepository.findById(any()))
+                .willReturn(Optional.empty());
+
+        PayException payException = assertThrows(PayException.class,
+                () -> friendService.denyFriendRequest(1L));
 
         assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.BAD_REQUEST.toString());
         assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.BAD_REQUEST.getDescription());

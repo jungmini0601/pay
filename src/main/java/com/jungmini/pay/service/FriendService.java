@@ -58,6 +58,16 @@ public class FriendService {
         return savedFriend;
     }
 
+    @Transactional
+    public FriendRequest denyFriendRequest(final long friendRequestId) {
+        FriendRequest friendRequest = friendRequestRepository.findById(friendRequestId)
+                .orElseThrow(() -> new PayException(ErrorCode.BAD_REQUEST));
+
+        friendRequestRepository.deleteById(friendRequestId);
+
+        return friendRequest;
+    }
+
     private void validationFriendRequest(FriendRequest request) {
         if (request.getRequester().getEmail().equals(request.getRecipient().getEmail())) {
             throw new PayException(ErrorCode.SELF_FRIEND_REQUEST);
