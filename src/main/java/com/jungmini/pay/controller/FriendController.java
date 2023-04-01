@@ -2,6 +2,7 @@ package com.jungmini.pay.controller;
 
 import com.jungmini.pay.common.resolover.SigninMember;
 import com.jungmini.pay.controller.dto.FriendDTO;
+import com.jungmini.pay.domain.Friend;
 import com.jungmini.pay.domain.FriendRequest;
 import com.jungmini.pay.domain.Member;
 import com.jungmini.pay.service.FriendService;
@@ -9,10 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -46,6 +44,19 @@ public class FriendController {
                 .build());
     }
 
+    @PostMapping("/friends/requests/accept/{id}")
+    public ResponseEntity<FriendDTO.AcceptFriendRequestResponse> acceptFriendRequest(
+            @PathVariable long id,
+            @SigninMember Member signinMember
+    ) {
+        Friend friend = friendService.acceptFriendRequest(id);
+        return ResponseEntity.ok(FriendDTO.AcceptFriendRequestResponse
+                .builder()
+                .message(String.format("%s님의 친구 요청 수락 완료", friend.getRequester()))
+                .build());
+    }
+
+
     @GetMapping("/friends/request")
     public ResponseEntity<List<FriendDTO.FindFriendRequestResponse>> findFriendRequests(
             Pageable pageable,
@@ -53,7 +64,7 @@ public class FriendController {
     ) {
         List<FriendDTO.FindFriendRequestResponse> requesters =
                 friendService.findRequests(pageable, signinMember).stream()
-                .map(friendRequest -> FriendDTO.FindFriendRequestResponse.from(friendRequest.getRequester()))
+                .map(FriendDTO.FindFriendRequestResponse::from)
                 .toList();
 
         return ResponseEntity.ok(requesters);

@@ -9,6 +9,7 @@ import lombok.*;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode(callSuper = false) // 부모 필드 값은 확인 안하도록 설정
 @Entity
 public class Member extends BaseTimeEntity {
 
@@ -16,10 +17,10 @@ public class Member extends BaseTimeEntity {
     private String email;
 
     @Column
-    private String password;
+    @EqualsAndHashCode.Exclude private String password;
 
     @Column
-    private String name;
+    @EqualsAndHashCode.Exclude private String name;
 
     public Member encodePassword(String encryptedPassword) {
         return Member.builder()

@@ -1,5 +1,6 @@
 package com.jungmini.pay.service;
 
+import com.jungmini.pay.domain.Friend;
 import com.jungmini.pay.domain.FriendRequest;
 import com.jungmini.pay.domain.Member;
 import com.jungmini.pay.exception.ErrorCode;
@@ -8,12 +9,14 @@ import com.jungmini.pay.repository.FriendRepository;
 import com.jungmini.pay.repository.FriendRequestRepository;
 import com.jungmini.pay.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class FriendService {
@@ -42,6 +45,16 @@ public class FriendService {
     public List<FriendRequest> findRequests(Pageable pageable, Member recipient) {
         return friendRequestRepository
                 .findFriendRequestByRecipientOrderByCreatedAtDesc(recipient, pageable);
+    }
+
+    @Transactional
+    public Friend acceptFriendRequest(final long friendRequestId) {
+        FriendRequest friendRequest = friendRequestRepository.findById(friendRequestId)
+                .orElseThrow(() -> new PayException(ErrorCode.BAD_REQUEST));
+
+        Friend savedFriend = friendRepository.save(Friend.from(friendRequest));
+        friendRequestRepository.deleteById(friendRequestId);
+        return savedFriend;
     }
 
     private void validationFriendRequest(FriendRequest request) {

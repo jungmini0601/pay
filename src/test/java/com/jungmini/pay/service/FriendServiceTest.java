@@ -1,5 +1,6 @@
 package com.jungmini.pay.service;
 
+import com.jungmini.pay.domain.Friend;
 import com.jungmini.pay.domain.FriendRequest;
 import com.jungmini.pay.domain.Member;
 import com.jungmini.pay.exception.ErrorCode;
@@ -9,7 +10,6 @@ import com.jungmini.pay.fixture.MemberFactory;
 import com.jungmini.pay.repository.FriendRepository;
 import com.jungmini.pay.repository.FriendRequestRepository;
 import com.jungmini.pay.repository.MemberRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -146,4 +146,34 @@ public class FriendServiceTest {
         assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.SELF_FRIEND_REQUEST.getDescription().toString());
     }
 
+    @Test
+    @DisplayName("친구 요청 수락 - 성공")
+    void acceptRequest_success() {
+        FriendRequest friendRequest = FriendRequestFactory.friendRequest();
+        Friend friend = Friend.from(friendRequest);
+
+        given(friendRequestRepository.findById(any()))
+                .willReturn(Optional.of(friendRequest));
+
+        given(friendRepository.save(any()))
+                .willReturn(friend);
+
+        Friend savedFriend = friendService.acceptFriendRequest(1L);
+
+        assertThat(savedFriend.getRequester()).isEqualTo(friend.getRequester());
+        assertThat(savedFriend.getRecipient()).isEqualTo(friend.getRecipient());
+    }
+
+    @Test
+    @DisplayName("친구 요청 수락 - 실패 친구 요청 못 찾는 경우")
+    void acceptRequest_fail_friend_request_not_found() {
+        given(friendRequestRepository.findById(any()))
+                .willReturn(Optional.empty());
+
+        PayException payException = assertThrows(PayException.class,
+                () -> friendService.acceptFriendRequest(1L));
+
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.BAD_REQUEST.toString());
+        assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.BAD_REQUEST.getDescription());
+    }
 }

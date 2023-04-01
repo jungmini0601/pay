@@ -45,16 +45,26 @@ public class FriendDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class FindFriendRequestResponse {
+        private long id;
         private String email;
         private String name;
         private LocalDateTime createdAt;
 
-        public static FindFriendRequestResponse from(Member requester) {
+        public static FindFriendRequestResponse from(FriendRequest friendRequest) {
             return FindFriendRequestResponse.builder()
-                    .email(requester.getEmail())
-                    .name(requester.getName())
-                    .createdAt(requester.getCreatedAt())
+                    .id(friendRequest.getId())
+                    .email(friendRequest.getRequester().getEmail())
+                    .name(friendRequest.getRequester().getName())
+                    .createdAt(friendRequest.getCreatedAt())
                     .build();
         }
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class AcceptFriendRequestResponse {
+        private String message;
     }
 }
