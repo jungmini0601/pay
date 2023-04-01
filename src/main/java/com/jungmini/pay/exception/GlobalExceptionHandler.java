@@ -13,6 +13,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(PayException.class)
     public ResponseEntity<ErrorResponse> handlePayException(PayException e) {
+        if (e.getErrorCode().equals(ErrorCode.UN_AUTHORIZED.toString())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ErrorResponse.builder()
+                        .errorCode(e.getErrorCode())
+                        .message(e.getErrorMessage())
+                        .build());
+        }
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.builder()
                         .errorCode(e.getErrorCode())

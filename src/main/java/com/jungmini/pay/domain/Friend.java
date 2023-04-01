@@ -21,4 +21,12 @@ public class Friend extends BaseTimeEntity {
     @ManyToOne
     @JoinColumn(name = "friend_recipient_email")
     private Member recipient;
+
+    public static Friend from(FriendRequest friendRequest) {
+        return Friend.builder()
+                .requester(friendRequest.getRequester())
+                .recipient(friendRequest.getRecipient())
+                .build();
+    }
+
 }

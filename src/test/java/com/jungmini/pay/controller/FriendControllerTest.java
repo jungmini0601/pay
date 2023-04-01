@@ -73,7 +73,7 @@ public class FriendControllerTest {
 
     @Test
     @DisplayName("통합 테스트 실패 - 친구 요청 토큰 X")
-    void createFriendRequest_fail_signin_required() throws Exception {
+    void createFriendRequest_fail_UnAuthorized() throws Exception {
         FriendRequest friendRequest = FriendRequestFactory.friendRequest();
 
         mvc.perform(
@@ -81,8 +81,8 @@ public class FriendControllerTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(friendRequest.getRecipient().getEmail())))
                 .andExpect(status().is4xxClientError())
-                .andExpect(jsonPath("$.errorCode").value(ErrorCode.SIGN_IN_REQUIRED.toString()))
-                .andExpect(jsonPath("$.message").value(ErrorCode.SIGN_IN_REQUIRED.getDescription()))
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.UN_AUTHORIZED.toString()))
+                .andExpect(jsonPath("$.message").value(ErrorCode.UN_AUTHORIZED.getDescription()))
                 .andDo(print());
     }
 
@@ -164,6 +164,35 @@ public class FriendControllerTest {
                     get("/friends/request")
                     .header("Auth", token))
                 .andExpect(status().is2xxSuccessful())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("통합 테스트 성공 - 친구 요청 수락 성공")
+    void acceptFriendRequest_success() throws Exception {
+        FriendRequest friendRequest = FriendRequestFactory.friendRequest();
+        Member requester = friendRequest.getRequester();
+        Member recipient = friendRequest.getRecipient();
+        memberService.signUp(requester);
+        memberService.signUp(recipient);
+        friendService.requestFriend(friendRequest);
+
+        String token = tokenService.generateToken(recipient.getEmail());
+
+        mvc.perform(post("/friends/requests/accept/1")
+                    .header("Auth", token))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.message").exists())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("통합 테스트 성공 - 친구 요청 토큰 X")
+    void acceptFriendRequest_fail_UnAuthorized() throws Exception {
+        mvc.perform(post("/friends/requests/accept/1"))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.UN_AUTHORIZED.toString()))
+                .andExpect(jsonPath("$.message").value(ErrorCode.UN_AUTHORIZED.getDescription()))
                 .andDo(print());
     }
 }

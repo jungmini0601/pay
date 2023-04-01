@@ -15,7 +15,7 @@ public enum ErrorCode {
     ALREADY_FRIENDS("이미 친구 관계입니다."),
     FRIENDS_REQUEST_EXISTS("이미 친구 요청이 존재합니다."),
     SELF_FRIEND_REQUEST("스스로에게 친구 요청을 할 수 없습니다."),
-    SIGN_IN_REQUIRED("로그인이 필요 합니다.");
+    UN_AUTHORIZED("로그인이 필요 합니다.");
     private final String description;
 
 }

@@ -44,7 +44,7 @@ public class SigninMemberArgumentResolver implements HandlerMethodArgumentResolv
 
     private static void checkAuthorization(String token) {
         if (token == null || token.length() == 0) {
-            throw new PayException(ErrorCode.SIGN_IN_REQUIRED);
+            throw new PayException(ErrorCode.UN_AUTHORIZED);
         }
     }
 }
