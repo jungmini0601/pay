@@ -15,6 +15,8 @@ public enum ErrorCode {
     ALREADY_FRIENDS("이미 친구 관계입니다."),
     FRIENDS_REQUEST_EXISTS("이미 친구 요청이 존재합니다."),
     SELF_FRIEND_REQUEST("스스로에게 친구 요청을 할 수 없습니다."),
+    ILLEGAL_ACCOUNT_NUMBER("계좌 번호는 12자리 숫자여야 합니다."),
+    ACCOUNT_SIZE_EXCEED("최대 계좌 개설 수를 초과 했습니다."),
     UN_AUTHORIZED("로그인이 필요 합니다.");
     private final String description;
 

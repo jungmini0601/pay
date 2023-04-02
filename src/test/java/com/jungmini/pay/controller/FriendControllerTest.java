@@ -175,11 +175,11 @@ public class FriendControllerTest {
         Member recipient = friendRequest.getRecipient();
         memberService.signUp(requester);
         memberService.signUp(recipient);
-        friendService.requestFriend(friendRequest);
+        FriendRequest createdRequest = friendService.requestFriend(friendRequest);
 
         String token = tokenService.generateToken(recipient.getEmail());
 
-        mvc.perform(post("/friends/requests/accept/1")
+        mvc.perform(post("/friends/requests/accept/" + createdRequest.getId())
                     .header("Auth", token))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.message").exists())
@@ -204,11 +204,11 @@ public class FriendControllerTest {
         Member recipient = friendRequest.getRecipient();
         memberService.signUp(requester);
         memberService.signUp(recipient);
-        friendService.requestFriend(friendRequest);
+        FriendRequest createdRequest = friendService.requestFriend(friendRequest);
 
         String token = tokenService.generateToken(recipient.getEmail());
 
-        mvc.perform(post("/friends/requests/deny/1")
+        mvc.perform(post("/friends/requests/deny/" + createdRequest.getId())
                         .header("Auth", token))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.message").exists())
