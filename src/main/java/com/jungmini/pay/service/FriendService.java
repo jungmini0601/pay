@@ -41,6 +41,16 @@ public class FriendService {
         return friendRequestRepository.save(FriendRequest.from(requester, recipient));
     }
 
+    /**
+     * readOnly = true를 붙이면 스프링 프레임워크가 하이버네이트 세션 플러시 모드를 MANUL로 설정
+     * 하이버네이트 세션 플러시 모드가 MANUAL일 경우, 강제로 플러시를 호출하지 않는한 플러시 발생 X
+     * 엔티티 등록 수정 삭제 동작 X 변경 감지로 인한 스냅샷 사용 X 성능 UP
+     *
+     * 꼭 트랜잭션을 붙여야 하나? (한 트랜잭션 내에서 SELECT 쿼리 결과가 달라 질 수 있기 때문에 붙이는 것이 안전하다고 판단)
+     * TODO 근거가 부족하지만 안정성을 위해 붙이는 것으로 결정 좀 더 조사가 필요함
+     * JPA를 쓰면 영속성 컨택스트가 REPETABLE READ를 보장하지 않나?
+     * PHANTOM READ는 어떻게 되나?
+     */
     @Transactional(readOnly = true)
     public List<FriendRequest> findRequests(Pageable pageable, Member recipient) {
         return friendRequestRepository
