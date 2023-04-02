@@ -67,4 +67,12 @@ public class FriendDTO {
     public static class AcceptFriendRequestResponse {
         private String message;
     }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class DenyFriendRequestResponse {
+        private String message;
+    }
 }
