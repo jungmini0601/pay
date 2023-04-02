@@ -88,10 +88,18 @@ public class FriendService {
         if (friendRequestRepository.existsFriendRequestByRecipientAndRequester(recipient, requester)) {
             throw new PayException(ErrorCode.FRIENDS_REQUEST_EXISTS);
         }
+
+        if (friendRequestRepository.existsFriendRequestByRecipientAndRequester(requester, recipient)) {
+            throw new PayException(ErrorCode.FRIENDS_REQUEST_EXISTS);
+        }
     }
 
     private void checkExistsFriendFrom(Member recipient, Member requester) {
         if (friendRepository.existsFriendByRecipientAndRequester(recipient, requester)) {
+            throw new PayException(ErrorCode.ALREADY_FRIENDS);
+        }
+
+        if (friendRepository.existsFriendByRecipientAndRequester(requester, recipient)) {
             throw new PayException(ErrorCode.ALREADY_FRIENDS);
         }
     }
