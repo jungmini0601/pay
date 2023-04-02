@@ -41,6 +41,22 @@ public class FriendService {
         return friendRequestRepository.save(FriendRequest.from(requester, recipient));
     }
 
+    /**
+     * @Transactional(readOnlny=true)를 붙여야 하는가?
+     *
+     * readOnly 옵션을 주면 세션 플러시 모드 MANUAL로 변경
+     * 플러시 발생 X 엔티티 등록 수정 삭제 동작 X
+     * 변경감지를 위한 스냅샷 사용X 성능 증가
+     *
+     * MySQL8을 사용하면 REPETABLE READ 격리수준에서 PHANTOM READ 정합성 문제가 발생하지 않는다.
+     * 한 트랜잭션 내부에서 레코드가 보였다 안보였다 하는 현상은 잔액조회시 한 트랜잭션 내에서 값이 바뀔 가능성이 존재한다.
+     * 따라서 readOnly = true를 서비스 내부에서 계속해서 붙이는 것이 좋다는 것이 결론이다.
+     *
+     * 친구 요청 조회 기능은 트랜잭션이 필요한가?
+     *
+     * 일반 적인 경우라면 필요하지 않다고 생각한다.
+     * 하지만 친구 도메인이 송금 기능과 엮여있는 만큼 높은 정합성이 보장된 데이터를 전달해 주기 위해 사용한다.
+     */
     @Transactional(readOnly = true)
     public List<FriendRequest> findRequests(Pageable pageable, Member recipient) {
         return friendRequestRepository
@@ -78,10 +94,18 @@ public class FriendService {
         if (friendRequestRepository.existsFriendRequestByRecipientAndRequester(recipient, requester)) {
             throw new PayException(ErrorCode.FRIENDS_REQUEST_EXISTS);
         }
+
+        if (friendRequestRepository.existsFriendRequestByRecipientAndRequester(requester, recipient)) {
+            throw new PayException(ErrorCode.FRIENDS_REQUEST_EXISTS);
+        }
     }
 
     private void checkExistsFriendFrom(Member recipient, Member requester) {
         if (friendRepository.existsFriendByRecipientAndRequester(recipient, requester)) {
+            throw new PayException(ErrorCode.ALREADY_FRIENDS);
+        }
+
+        if (friendRepository.existsFriendByRecipientAndRequester(requester, recipient)) {
             throw new PayException(ErrorCode.ALREADY_FRIENDS);
         }
     }

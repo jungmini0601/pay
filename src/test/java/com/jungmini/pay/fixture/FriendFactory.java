@@ -22,4 +22,23 @@ public class FriendFactory {
                 .requester(requester)
                 .build();
     }
+
+    public static Friend friendReverseDirection() {
+        Member recipient = Member.builder()
+                .email("requester@test.com")
+                .name("requester")
+                .password("tset")
+                .build();
+
+        Member requester = Member.builder()
+                .email("recipient@test.com")
+                .name("recipent")
+                .password("test")
+                .build();
+
+        return Friend.builder()
+                .recipient(recipient)
+                .requester(requester)
+                .build();
+    }
 }

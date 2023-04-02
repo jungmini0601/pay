@@ -41,7 +41,7 @@ public class FriendServiceTest {
 
     @Test
     @DisplayName("친구 요청 성공")
-    void createFriendRequest_success() {
+    void create_friend_request_success() {
         FriendRequest friendRequest = FriendRequestFactory.friendRequest();
 
         given(memberRepository.findById(friendRequest.getRecipient().getEmail()))
@@ -66,7 +66,7 @@ public class FriendServiceTest {
 
     @Test
     @DisplayName("친구 요청 실패 - 이미 친구인 경우")
-    void createFriendRequest_fail_already_friends() {
+    void create_friend_request_fail_already_friends() {
         FriendRequest friendRequest = FriendRequestFactory.friendRequest();
 
         given(memberRepository.findById(friendRequest.getRecipient().getEmail()))
@@ -88,7 +88,7 @@ public class FriendServiceTest {
 
     @Test
     @DisplayName("친구 요청 실패 - 친구 요청이 존재하는 경우")
-    void createFriendRequest_fail_friend_request_exists() {
+    void create_friend_request_fail_friend_request_exists() {
         FriendRequest friendRequest = FriendRequestFactory.friendRequest();
 
         given(memberRepository.findById(friendRequest.getRecipient().getEmail()))
@@ -112,8 +112,8 @@ public class FriendServiceTest {
     }
 
     @Test
-    @DisplayName("친구 요청 실패 - 존재 하지 않는 친구인 경우")
-    void createFriendRequest_member_not_found() {
+    @DisplayName("친구 요청 실패 - 존재 하지 않는 회원인 경우")
+    void create_friend_request_fail_member_not_found() {
         FriendRequest friendRequest = FriendRequestFactory.friendRequest();
 
         given(memberRepository.findById(friendRequest.getRecipient().getEmail()))
@@ -130,7 +130,7 @@ public class FriendServiceTest {
 
     @Test
     @DisplayName("친구 요청 실패 - 자기 자신에게 친구 요청 하는 경우")
-    void createFriendRequest_self_request() {
+    void create_friend_request_fail_self_request() {
         Member recipient = MemberFactory.member();
         Member requester = MemberFactory.member();
         FriendRequest friendRequest = FriendRequest.builder()
@@ -148,7 +148,7 @@ public class FriendServiceTest {
 
     @Test
     @DisplayName("친구 요청 수락 - 성공")
-    void acceptFriendRequest_success() {
+    void accept_friend_request_success() {
         FriendRequest friendRequest = FriendRequestFactory.friendRequest();
         Friend friend = Friend.from(friendRequest);
 
@@ -166,7 +166,7 @@ public class FriendServiceTest {
 
     @Test
     @DisplayName("친구 요청 수락 - 실패 친구 요청 못 찾는 경우")
-    void acceptFriendRequest_fail_friend_request_not_found() {
+    void accept_friend_request_fail_friend_request_not_found() {
         given(friendRequestRepository.findById(any()))
                 .willReturn(Optional.empty());
 
@@ -179,7 +179,7 @@ public class FriendServiceTest {
 
     @Test
     @DisplayName("친구 요청 거절 - 성공")
-    void denyFriendRequest_success() {
+    void deny_friend_request_success() {
         FriendRequest friendRequest = FriendRequestFactory.friendRequest();
         Friend friend = Friend.from(friendRequest);
 
@@ -194,7 +194,7 @@ public class FriendServiceTest {
 
     @Test
     @DisplayName("친구 요청 실패 - 실패 친구 요청 못 찾는 경우")
-    void denyFriendRequest_fail_friend_request_not_found() {
+    void deny_friend_request_fail_friend_request_not_found() {
         given(friendRequestRepository.findById(any()))
                 .willReturn(Optional.empty());
 
