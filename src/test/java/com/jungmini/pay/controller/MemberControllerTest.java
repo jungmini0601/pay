@@ -50,7 +50,7 @@ class MemberControllerTest {
 
     @DisplayName("통합테스트 - 회원가입 실패 400번 입력 값 에러")
     @Test
-    void signup_badRequest() throws Exception {
+    void signup_fail_badRequest() throws Exception {
         Member member = Member.builder().build();
 
         mvc.perform(
@@ -65,7 +65,7 @@ class MemberControllerTest {
 
     @DisplayName("통합테스트 - 회원가입 실패 중복된 이메일")
     @Test
-    void signup_duplicated_member() throws Exception {
+    void signup_success_duplicated_member() throws Exception {
         Member member = MemberFactory.member();
         memberService.signUp(member);
 

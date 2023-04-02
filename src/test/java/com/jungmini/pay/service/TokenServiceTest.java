@@ -18,7 +18,7 @@ class TokenServiceTest {
 
     @Test
     @DisplayName("토큰 생성 테스트")
-    void generateToken() {
+    void generate_token() {
         String email = MemberFactory.member().getEmail();
         String token = tokenService.generateToken(email);
 
@@ -29,7 +29,7 @@ class TokenServiceTest {
 
     @Test
     @DisplayName("토큰 검증 테스트 성공")
-    void verifyToken_success() {
+    void verify_token_success() {
         String email = MemberFactory.member().getEmail();
         String token = tokenService.generateToken(email);
 
@@ -39,7 +39,7 @@ class TokenServiceTest {
 
     @Test
     @DisplayName("토큰 검증 실패 테스트 - 토큰 변조된 경우")
-    void verifyToken_fail() {
+    void verify_token_fail() {
         String email = MemberFactory.member().getEmail();
         String token = tokenService.generateToken(email);
 
@@ -52,7 +52,7 @@ class TokenServiceTest {
 
     @Test
     @DisplayName("토큰 검증 실패 테스트 - 토큰 유효기간 지난 경우")
-    void verifyToken_fail_timeout() throws Exception {
+    void verify_token_fail_timeout() throws Exception {
         jwtProperties = new JwtProperties("asdjkfhasdjlfhasdjklfhklsdjfhlaskdjfahlsdjfh", 1);
         tokenService = new TokenService(jwtProperties);
 

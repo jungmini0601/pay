@@ -11,7 +11,7 @@ class AccountTest {
 
     @Test
     @DisplayName("초기 생성되는 계좌 번호는 DEFAULT_ACCOUNT_NUMBER")
-    void createAccountTest() {
+    void create_account_success_default_account_number() {
         Member owner = MemberFactory.member();
 
         Account newAccount = Account.from(owner, null);
@@ -24,7 +24,7 @@ class AccountTest {
 
     @Test
     @DisplayName("이후 생성되는 계좌 번호는 숫자가 1 더 크다")
-    void createAccountTest_accountNumber_increment() {
+    void create_account_success_accountNumber_increment() {
         Member owner = MemberFactory.member();
         Account account = Account.builder()
                 .accountNumber("100000000000")

@@ -34,7 +34,7 @@ class AccountServiceTest {
 
     @Test
     @DisplayName("계좌 생성 성공")
-    void createAccount_success() {
+    void create_account_success() {
         Member owner = MemberFactory.member();
         Account account = AccountFactory.account();
 
@@ -53,8 +53,8 @@ class AccountServiceTest {
     }
 
     @Test
-    @DisplayName("계좌 생성 실패 최대 - 계좌 생성 개수 초과")
-    void createAccount_fail_account_size_exceed() {
+    @DisplayName("계좌 생성 실패 - 최대 계좌 생성 개수 초과")
+    void create_account_fail_account_size_exceed() {
         Member owner = MemberFactory.member();
 
         given(accountRepository.countByMember(any()))

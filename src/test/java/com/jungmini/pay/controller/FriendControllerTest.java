@@ -53,7 +53,7 @@ public class FriendControllerTest {
 
     @Test
     @DisplayName("통합 테스트 - 친구 요청 성공")
-    void createFriendRequest_success() throws Exception {
+    void create_friend_request_success() throws Exception {
         FriendRequest friendRequest = FriendRequestFactory.friendRequest();
         Member requester = friendRequest.getRequester();
         Member recipient = friendRequest.getRecipient();
@@ -72,8 +72,8 @@ public class FriendControllerTest {
     }
 
     @Test
-    @DisplayName("통합 테스트 실패 - 친구 요청 토큰 X")
-    void createFriendRequest_fail_UnAuthorized() throws Exception {
+    @DisplayName("통합 테스트 - 친구 요청 실패 토큰 X")
+    void create_friend_request_fail_without_token() throws Exception {
         FriendRequest friendRequest = FriendRequestFactory.friendRequest();
 
         mvc.perform(
@@ -87,8 +87,8 @@ public class FriendControllerTest {
     }
 
     @Test
-    @DisplayName("통합 테스트 실패 - 친구 요청이 존재하는 경우")
-    void createFriendRequest_fail_request_exists() throws Exception {
+    @DisplayName("통합 테스트 - 친구요청 실패 친구 요청이 존재하는 경우")
+    void create_friend_request_fail_request_exists() throws Exception {
         FriendRequest friendRequest = FriendRequestFactory.friendRequest();
         Member requester = friendRequest.getRequester();
         Member recipient = friendRequest.getRecipient();
@@ -109,8 +109,8 @@ public class FriendControllerTest {
     }
 
     @Test
-    @DisplayName("통합 테스트 실패 - 이미 친구인경우")
-    void createFriendRequest_fail_already_friends() throws Exception {
+    @DisplayName("통합 테스트 - 친구 요청 실패 이미 친구인경우")
+    void create_friend_request_fail_already_friends() throws Exception {
         Friend friend = FriendFactory.friend();
         Member requester = friend.getRequester();
         Member recipient = friend.getRecipient();
@@ -131,8 +131,8 @@ public class FriendControllerTest {
     }
 
     @Test
-    @DisplayName("통합 테스트 실패 - 입력값 검증 실패")
-    void createFriendRequest_fail_bad_request() throws Exception {
+    @DisplayName("통합 테스트 - 친구 요청 입력값 검증 실패")
+    void create_friend_request_bad_request() throws Exception {
         Member member = MemberFactory.member();
         FriendDTO.CreateFriendRequest request = FriendDTO.CreateFriendRequest.builder().build();
         memberService.signUp(member);
@@ -150,8 +150,8 @@ public class FriendControllerTest {
     }
 
     @Test
-    @DisplayName("통합 테스트 성공 - 친구 요청 조회")
-    void getFriendRequests_success() throws Exception {
+    @DisplayName("통합 테스트 - 친구 요청 조회 성공")
+    void get_friend_requests_success() throws Exception {
         FriendRequest friendRequest = FriendRequestFactory.friendRequest();
         Member requester = friendRequest.getRequester();
         Member recipient = friendRequest.getRecipient();
@@ -168,8 +168,8 @@ public class FriendControllerTest {
     }
 
     @Test
-    @DisplayName("통합 테스트 성공 - 친구 요청 수락 성공")
-    void acceptFriendRequest_success() throws Exception {
+    @DisplayName("통합 테스트 - 친구 요청 수락 성공")
+    void accept_friend_request_success() throws Exception {
         FriendRequest friendRequest = FriendRequestFactory.friendRequest();
         Member requester = friendRequest.getRequester();
         Member recipient = friendRequest.getRecipient();
@@ -187,8 +187,8 @@ public class FriendControllerTest {
     }
 
     @Test
-    @DisplayName("통합 테스트 성공 - 친구 요청 토큰 X")
-    void acceptFriendRequest_fail_UnAuthorized() throws Exception {
+    @DisplayName("통합 테스트 - 친구 요청 수락 실패 토큰 X")
+    void accept_friend_request_without_token() throws Exception {
         mvc.perform(post("/friends/requests/accept/1"))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.errorCode").value(ErrorCode.UN_AUTHORIZED.toString()))
@@ -197,8 +197,8 @@ public class FriendControllerTest {
     }
 
     @Test
-    @DisplayName("통합 테스트 성공 - 친구 요청 거절 성공")
-    void denyFriendRequest_success() throws Exception {
+    @DisplayName("통합 테스트 - 친구 요청 거절 성공")
+    void deny_friend_request_success() throws Exception {
         FriendRequest friendRequest = FriendRequestFactory.friendRequest();
         Member requester = friendRequest.getRequester();
         Member recipient = friendRequest.getRecipient();
@@ -216,8 +216,8 @@ public class FriendControllerTest {
     }
 
     @Test
-    @DisplayName("통합 테스트 성공 - 친구 요청 거절 실패 토큰 X")
-    void denyFriendRequest_fail() throws Exception {
+    @DisplayName("통합 테스트 - 친구 요청 거절 실패 토큰 X")
+    void deny_friend_request_fail_without_token() throws Exception {
         mvc.perform(post("/friends/requests/deny/1"))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.errorCode").value(ErrorCode.UN_AUTHORIZED.toString()))
