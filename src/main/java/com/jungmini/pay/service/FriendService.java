@@ -42,14 +42,20 @@ public class FriendService {
     }
 
     /**
-     * readOnly = true를 붙이면 스프링 프레임워크가 하이버네이트 세션 플러시 모드를 MANUL로 설정
-     * 하이버네이트 세션 플러시 모드가 MANUAL일 경우, 강제로 플러시를 호출하지 않는한 플러시 발생 X
-     * 엔티티 등록 수정 삭제 동작 X 변경 감지로 인한 스냅샷 사용 X 성능 UP
+     * @Transactional(readOnlny=true)를 붙여야 하는가?
      *
-     * 꼭 트랜잭션을 붙여야 하나? (한 트랜잭션 내에서 SELECT 쿼리 결과가 달라 질 수 있기 때문에 붙이는 것이 안전하다고 판단)
-     * TODO 근거가 부족하지만 안정성을 위해 붙이는 것으로 결정 좀 더 조사가 필요함
-     * JPA를 쓰면 영속성 컨택스트가 REPETABLE READ를 보장하지 않나?
-     * PHANTOM READ는 어떻게 되나?
+     * readOnly 옵션을 주면 세션 플러시 모드 MANUAL로 변경
+     * 플러시 발생 X 엔티티 등록 수정 삭제 동작 X
+     * 변경감지를 위한 스냅샷 사용X 성능 증가
+     *
+     * MySQL8을 사용하면 REPETABLE READ 격리수준에서 PHANTOM READ 정합성 문제가 발생하지 않는다.
+     * 한 트랜잭션 내부에서 레코드가 보였다 안보였다 하는 현상은 잔액조회시 한 트랜잭션 내에서 값이 바뀔 가능성이 존재한다.
+     * 따라서 readOnly = true를 서비스 내부에서 계속해서 붙이는 것이 좋다는 것이 결론이다.
+     *
+     * 친구 요청 조회 기능은 트랜잭션이 필요한가?
+     *
+     * 일반 적인 경우라면 필요하지 않다고 생각한다.
+     * 하지만 친구 도메인이 송금 기능과 엮여있는 만큼 높은 정합성이 보장된 데이터를 전달해 주기 위해 사용한다.
      */
     @Transactional(readOnly = true)
     public List<FriendRequest> findRequests(Pageable pageable, Member recipient) {
