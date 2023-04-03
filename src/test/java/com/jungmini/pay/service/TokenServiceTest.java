@@ -1,9 +1,9 @@
 package com.jungmini.pay.service;
 
-import com.jungmini.pay.exception.ErrorCode;
-import com.jungmini.pay.exception.PayException;
+import com.jungmini.pay.common.exception.ErrorCode;
+import com.jungmini.pay.common.exception.PayException;
 import com.jungmini.pay.fixture.MemberFactory;
-import com.jungmini.pay.properties.JwtProperties;
+import com.jungmini.pay.common.properties.JwtProperties;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

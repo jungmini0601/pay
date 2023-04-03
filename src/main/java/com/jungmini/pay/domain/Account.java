@@ -1,8 +1,8 @@
 package com.jungmini.pay.domain;
 
-import com.jungmini.pay.exception.ErrorCode;
-import com.jungmini.pay.exception.PayException;
-import com.jungmini.pay.type.AccountStatus;
+import com.jungmini.pay.common.exception.ErrorCode;
+import com.jungmini.pay.common.exception.PayException;
+import com.jungmini.pay.domain.type.AccountStatus;
 import jakarta.persistence.*;
 import lombok.*;
 

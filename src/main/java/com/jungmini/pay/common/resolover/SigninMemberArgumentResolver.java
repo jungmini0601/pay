@@ -1,7 +1,7 @@
 package com.jungmini.pay.common.resolover;
 
-import com.jungmini.pay.exception.ErrorCode;
-import com.jungmini.pay.exception.PayException;
+import com.jungmini.pay.common.exception.ErrorCode;
+import com.jungmini.pay.common.exception.PayException;
 import com.jungmini.pay.repository.MemberRepository;
 import com.jungmini.pay.service.TokenService;
 import jakarta.servlet.http.HttpServletRequest;

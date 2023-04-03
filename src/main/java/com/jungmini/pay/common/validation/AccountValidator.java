@@ -2,7 +2,7 @@ package com.jungmini.pay.common.validation;
 
 import com.jungmini.pay.common.annotation.AccountNumberCheck;
 import com.jungmini.pay.domain.Account;
-import com.jungmini.pay.exception.PayException;
+import com.jungmini.pay.common.exception.PayException;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

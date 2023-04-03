@@ -1,7 +1,7 @@
 package com.jungmini.pay.service;
-import com.jungmini.pay.exception.ErrorCode;
-import com.jungmini.pay.exception.PayException;
-import com.jungmini.pay.properties.JwtProperties;
+import com.jungmini.pay.common.exception.ErrorCode;
+import com.jungmini.pay.common.exception.PayException;
+import com.jungmini.pay.common.properties.JwtProperties;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
