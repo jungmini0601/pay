@@ -30,8 +30,17 @@ public class AccountService {
         return accountRepository.save(newAccount);
     }
 
+    @Transactional
+    public Account chargePoint(int amount, AccountNumber accountNumber, Member requester) {
+        Account account = accountRepository.findById(accountNumber.getAccountNumber())
+                .orElseThrow(() -> new PayException(ErrorCode.ACCOUNT_NOT_FOUND));
+
+        account.chargePoint(amount, requester);
+        return account;
+    }
+
     private void validateAccountSize(Member owner) {
-        int accountCount = accountRepository.countByMember(owner);
+        int accountCount = accountRepository.countByOwner(owner);
 
         if (accountCount >= MAX_ACCOUNT_SIZE) {
             throw new PayException(ErrorCode.ACCOUNT_SIZE_EXCEED);

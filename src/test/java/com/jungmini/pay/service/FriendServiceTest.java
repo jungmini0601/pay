@@ -178,7 +178,7 @@ public class FriendServiceTest {
     }
 
     @Test
-    @DisplayName("친구 요청 거절 - 성공")
+    @DisplayName("친구 요청 거절 성공")
     void deny_friend_request_success() {
         FriendRequest friendRequest = FriendRequestFactory.friendRequest();
         Friend friend = Friend.from(friendRequest);

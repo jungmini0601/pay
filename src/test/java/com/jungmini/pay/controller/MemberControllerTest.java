@@ -32,7 +32,7 @@ class MemberControllerTest {
     @Autowired
     private MemberService memberService;
 
-    @DisplayName("통합테스트 - 회원가입 성공")
+    @DisplayName("통합테스트 회원가입 성공")
     @Test
     void signup_success() throws Exception {
         Member member = MemberFactory.member();
@@ -48,7 +48,7 @@ class MemberControllerTest {
                 .andDo(print());
     }
 
-    @DisplayName("통합테스트 - 회원가입 실패 400번 입력 값 에러")
+    @DisplayName("통합테스트 회원가입 실패 - 입력 값 검증 실패")
     @Test
     void signup_fail_badRequest() throws Exception {
         Member member = Member.builder().build();
@@ -63,7 +63,7 @@ class MemberControllerTest {
                 .andDo(print());
     }
 
-    @DisplayName("통합테스트 - 회원가입 실패 중복된 이메일")
+    @DisplayName("통합테스트 회원가입 실패 - 중복된 이메일")
     @Test
     void signup_success_duplicated_member() throws Exception {
         Member member = MemberFactory.member();
@@ -94,7 +94,7 @@ class MemberControllerTest {
                 .andDo(print());
     }
 
-    @DisplayName("통합테스트 - 로그인 실패 비밀번호 불일치")
+    @DisplayName("통합테스트 로그인 실패 - 비밀번호 불일치")
     @Test
     void  signin_fail_password_mismatch() throws Exception {
         Member member = MemberFactory.member();
@@ -115,7 +115,7 @@ class MemberControllerTest {
                 .andDo(print());
     }
 
-    @DisplayName("통합테스트 - 로그인 실패 존재하지 않는 회원")
+    @DisplayName("통합테스트 로그인 실패 - 존재하지 않는 회원")
     @Test
     void  signin_fail_member_not_found() throws Exception {
         Member member = MemberFactory.member();
@@ -130,7 +130,7 @@ class MemberControllerTest {
                 .andDo(print());
     }
 
-    @DisplayName("통합테스트 - 로그인 실패 400번 입력 값 에러")
+    @DisplayName("통합테스트 로그인 실패 - 입력 값 검증 실패")
     @Test
     void signin_badRequest() throws Exception {
         Member member = Member.builder().build();

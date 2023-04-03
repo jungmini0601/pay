@@ -13,12 +13,21 @@ public class AccountFactory {
                 .balance(0)
                 .accountNumber(Account.DEFAULT_ACCOUNT_NUMBER)
                 .accountStatus(AccountStatus.IN_USE)
-                .member(owner)
+                .owner(owner)
                 .build();
     }
 
     public static Account secondAccount() {
         Member owner = MemberFactory.member();
         return Account.from(owner, account());
+    }
+
+    public static Account accountFrom(Member owner) {
+        return Account.builder()
+                .balance(0)
+                .accountNumber(Account.DEFAULT_ACCOUNT_NUMBER)
+                .accountStatus(AccountStatus.IN_USE)
+                .owner(owner)
+                .build();
     }
 }
