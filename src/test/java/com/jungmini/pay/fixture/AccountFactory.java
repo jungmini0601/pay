@@ -2,7 +2,7 @@ package com.jungmini.pay.fixture;
 
 import com.jungmini.pay.domain.Account;
 import com.jungmini.pay.domain.Member;
-import com.jungmini.pay.type.AccountStatus;
+import com.jungmini.pay.domain.type.AccountStatus;
 
 public class AccountFactory {
 

@@ -1,4 +1,4 @@
-package com.jungmini.pay.properties;
+package com.jungmini.pay.common.properties;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

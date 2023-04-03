@@ -1,4 +1,4 @@
-package com.jungmini.pay.exception;
+package com.jungmini.pay.common.exception;
 
 import lombok.Builder;
 import lombok.Getter;

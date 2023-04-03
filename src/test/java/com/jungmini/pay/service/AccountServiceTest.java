@@ -1,14 +1,13 @@
 package com.jungmini.pay.service;
 
 import com.jungmini.pay.domain.Account;
-import com.jungmini.pay.domain.AccountNumber;
 import com.jungmini.pay.domain.Member;
-import com.jungmini.pay.exception.ErrorCode;
-import com.jungmini.pay.exception.PayException;
+import com.jungmini.pay.common.exception.ErrorCode;
+import com.jungmini.pay.common.exception.PayException;
 import com.jungmini.pay.fixture.AccountFactory;
 import com.jungmini.pay.fixture.MemberFactory;
 import com.jungmini.pay.repository.AccountRepository;
-import com.jungmini.pay.type.AccountStatus;
+import com.jungmini.pay.domain.type.AccountStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

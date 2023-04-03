@@ -5,7 +5,7 @@ import com.jungmini.pay.controller.dto.FriendDTO;
 import com.jungmini.pay.domain.Friend;
 import com.jungmini.pay.domain.FriendRequest;
 import com.jungmini.pay.domain.Member;
-import com.jungmini.pay.exception.ErrorCode;
+import com.jungmini.pay.common.exception.ErrorCode;
 import com.jungmini.pay.fixture.FriendFactory;
 import com.jungmini.pay.fixture.FriendRequestFactory;
 import com.jungmini.pay.fixture.MemberFactory;

@@ -2,7 +2,7 @@ package com.jungmini.pay.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jungmini.pay.domain.Member;
-import com.jungmini.pay.exception.ErrorCode;
+import com.jungmini.pay.common.exception.ErrorCode;
 import com.jungmini.pay.fixture.MemberFactory;
 import com.jungmini.pay.service.MemberService;
 import jakarta.transaction.Transactional;
