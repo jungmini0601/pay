@@ -1,0 +1,14 @@
+### 계좌 생성
+POST http://localhost:8080/accounts
+Auth: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZXhwIjoxNjgwMzUxMjUwfQ.VznCLWRPLsC-dxuMfi3aXtkv-5c-hZzFE_AsZlWTdgFsJnC4wyuUIAbIyh8Pd8QxFgfA7uRdngBFEkERTP1Yiw
+Content-Type: application/json
+
+### 포인트 충전
+POST http://localhost:8080/accounts/points
+Auth: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZXhwIjoxNjgwMzUxMjUwfQ.VznCLWRPLsC-dxuMfi3aXtkv-5c-hZzFE_AsZlWTdgFsJnC4wyuUIAbIyh8Pd8QxFgfA7uRdngBFEkERTP1Yiw
+Content-Type: application/json
+
+{
+  "amount": 10000,
+  "accountNumber": "100000000000"
+}

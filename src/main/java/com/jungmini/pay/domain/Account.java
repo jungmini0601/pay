@@ -21,7 +21,7 @@ public class Account extends BaseTimeEntity implements AccountNumber {
 
     @ManyToOne
     @JoinColumn(name = "email")
-    private Member member;
+    private Member owner;
 
     private long balance;
 
@@ -32,7 +32,7 @@ public class Account extends BaseTimeEntity implements AccountNumber {
         Account newAccount = Account.builder()
                 .balance(0)
                 .accountNumber(createNextAccount(accountNumber))
-                .member(owner)
+                .owner(owner)
                 .accountStatus(AccountStatus.IN_USE)
                 .build();
 
@@ -41,20 +41,32 @@ public class Account extends BaseTimeEntity implements AccountNumber {
         return newAccount;
     }
 
+    public void chargePoint(int amount, Member requester) {
+        if (!this.owner.equals(requester)) {
+            throw new PayException(ErrorCode.REQUESTER_IS_NOT_OWNER);
+        }
+
+        this.balance += amount;
+    }
+
     /**
      * 계좌 번호는 12자리 숫자로 이루어진 문자열이어야 한다.
      */
-    private void validateAccountNumber() {
-        if (this.accountNumber == null)
+    public static void validateAccountNumber(String accountNumber) {
+        if (accountNumber == null)
             throw new PayException(ErrorCode.ILLEGAL_ACCOUNT_NUMBER);
 
-        if (this.accountNumber.length() != 12)
+        if (accountNumber.length() != 12)
             throw new PayException(ErrorCode.ILLEGAL_ACCOUNT_NUMBER);
 
         accountNumber.chars().forEach(c -> {
             if (c < '0' || c > '9')
                 throw new PayException(ErrorCode.ILLEGAL_ACCOUNT_NUMBER);
         });
+    }
+
+    private void validateAccountNumber() {
+        validateAccountNumber(this.accountNumber);
     }
 
     private static String createNextAccount(AccountNumber accountNumber) {

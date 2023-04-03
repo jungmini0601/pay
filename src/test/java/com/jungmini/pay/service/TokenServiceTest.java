@@ -17,7 +17,7 @@ class TokenServiceTest {
             new TokenService(jwtProperties);
 
     @Test
-    @DisplayName("토큰 생성 테스트")
+    @DisplayName("토큰 생성 테스트 성공")
     void generate_token() {
         String email = MemberFactory.member().getEmail();
         String token = tokenService.generateToken(email);

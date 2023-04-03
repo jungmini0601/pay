@@ -5,10 +5,12 @@ import com.jungmini.pay.controller.dto.AccountDTO;
 import com.jungmini.pay.domain.Account;
 import com.jungmini.pay.domain.Member;
 import com.jungmini.pay.service.AccountService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -24,5 +26,17 @@ public class AccountController {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(AccountDTO.CreateAccountResponse.from(newAccount));
+    }
+
+    @PostMapping("/accounts/points")
+    public ResponseEntity<AccountDTO.ChargePointResponse> chargePoint(
+        @RequestBody @Valid AccountDTO.ChargePointRequest chargePointRequest,
+        @SigninMember Member member) {
+        Account account = accountService
+                .chargePoint(chargePointRequest.getAmount(), chargePointRequest, member);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(AccountDTO.ChargePointResponse.from(account));
+
     }
 }

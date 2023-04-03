@@ -13,5 +13,5 @@ public interface AccountRepository extends JpaRepository<Account, String> {
 
     Optional<AccountNumber> findFirstByOrderByCreatedAtDesc();
 
-    int countByMember(Member member);
+    int countByOwner(Member owner);
 }

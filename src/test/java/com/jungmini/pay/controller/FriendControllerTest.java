@@ -52,7 +52,7 @@ public class FriendControllerTest {
     private FriendRepository friendRepository;
 
     @Test
-    @DisplayName("통합 테스트 - 친구 요청 성공")
+    @DisplayName("통합 테스트 친구 요청 성공")
     void create_friend_request_success() throws Exception {
         FriendRequest friendRequest = FriendRequestFactory.friendRequest();
         Member requester = friendRequest.getRequester();
@@ -72,7 +72,7 @@ public class FriendControllerTest {
     }
 
     @Test
-    @DisplayName("통합 테스트 - 친구 요청 실패 토큰 X")
+    @DisplayName("통합 테스트 친구 요청 실패 - 토큰 X")
     void create_friend_request_fail_without_token() throws Exception {
         FriendRequest friendRequest = FriendRequestFactory.friendRequest();
 
@@ -87,7 +87,7 @@ public class FriendControllerTest {
     }
 
     @Test
-    @DisplayName("통합 테스트 - 친구요청 실패 친구 요청이 존재하는 경우")
+    @DisplayName("통합 테스트 친구요청 실패 - 친구 요청이 존재하는 경우")
     void create_friend_request_fail_request_exists() throws Exception {
         FriendRequest friendRequest = FriendRequestFactory.friendRequest();
         Member requester = friendRequest.getRequester();
@@ -109,7 +109,7 @@ public class FriendControllerTest {
     }
 
     @Test
-    @DisplayName("통합 테스트 - 친구 요청 실패 이미 친구인경우")
+    @DisplayName("통합 테스트 친구 요청 실패 - 이미 친구인경우")
     void create_friend_request_fail_already_friends() throws Exception {
         Friend friend = FriendFactory.friend();
         Member requester = friend.getRequester();
@@ -131,7 +131,7 @@ public class FriendControllerTest {
     }
 
     @Test
-    @DisplayName("통합 테스트 - 친구 요청 실패 이미 친구인경우 역방향")
+    @DisplayName("통합 테스트 친구 요청 실패 - 이미 친구인경우 역방향")
     void create_friend_request_fail_already_friends_reverse_direction() throws Exception {
         Friend friend = FriendFactory.friendReverseDirection();
         Member requester = friend.getRequester();
@@ -153,7 +153,7 @@ public class FriendControllerTest {
     }
 
     @Test
-    @DisplayName("통합 테스트 - 친구 요청 입력값 검증 실패")
+    @DisplayName("통합 테스트 친구 요청 실패 - 입력값 검증 실패")
     void create_friend_request_bad_request() throws Exception {
         Member member = MemberFactory.member();
         FriendDTO.CreateFriendRequest request = FriendDTO.CreateFriendRequest.builder().build();
@@ -172,7 +172,7 @@ public class FriendControllerTest {
     }
 
     @Test
-    @DisplayName("통합 테스트 - 친구 요청 조회 성공")
+    @DisplayName("통합 테스트 친구 요청 조회 성공")
     void get_friend_requests_success() throws Exception {
         FriendRequest friendRequest = FriendRequestFactory.friendRequest();
         Member requester = friendRequest.getRequester();
@@ -190,7 +190,7 @@ public class FriendControllerTest {
     }
 
     @Test
-    @DisplayName("통합 테스트 - 친구 요청 수락 성공")
+    @DisplayName("통합 테스트 친구 요청 수락 성공")
     void accept_friend_request_success() throws Exception {
         FriendRequest friendRequest = FriendRequestFactory.friendRequest();
         Member requester = friendRequest.getRequester();
@@ -209,7 +209,7 @@ public class FriendControllerTest {
     }
 
     @Test
-    @DisplayName("통합 테스트 - 친구 요청 수락 실패 토큰 X")
+    @DisplayName("통합 테스트 친구 요청 수락 실패 - 토큰 X")
     void accept_friend_request_without_token() throws Exception {
         mvc.perform(post("/friends/requests/accept/1"))
                 .andExpect(status().is4xxClientError())
@@ -219,7 +219,7 @@ public class FriendControllerTest {
     }
 
     @Test
-    @DisplayName("통합 테스트 - 친구 요청 거절 성공")
+    @DisplayName("통합 테스트 친구 요청 거절 성공")
     void deny_friend_request_success() throws Exception {
         FriendRequest friendRequest = FriendRequestFactory.friendRequest();
         Member requester = friendRequest.getRequester();
@@ -238,7 +238,7 @@ public class FriendControllerTest {
     }
 
     @Test
-    @DisplayName("통합 테스트 - 친구 요청 거절 실패 토큰 X")
+    @DisplayName("통합 테스트 친구 요청 거절 실패 - 토큰 X")
     void deny_friend_request_fail_without_token() throws Exception {
         mvc.perform(post("/friends/requests/deny/1"))
                 .andExpect(status().is4xxClientError())
