@@ -30,4 +30,13 @@ public class AccountFactory {
                 .owner(owner)
                 .build();
     }
+
+    public static Account accountFromOwnerAndBalance(Member owner, long balance) {
+        return Account.builder()
+                .balance(balance)
+                .accountNumber(Account.DEFAULT_ACCOUNT_NUMBER)
+                .accountStatus(AccountStatus.IN_USE)
+                .owner(owner)
+                .build();
+    }
 }

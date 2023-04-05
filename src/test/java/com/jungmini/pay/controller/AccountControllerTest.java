@@ -1,16 +1,20 @@
 package com.jungmini.pay.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jungmini.pay.common.exception.ErrorCode;
 import com.jungmini.pay.controller.dto.AccountDTO;
 import com.jungmini.pay.domain.Account;
+import com.jungmini.pay.domain.FriendRequest;
 import com.jungmini.pay.domain.Member;
-import com.jungmini.pay.common.exception.ErrorCode;
+import com.jungmini.pay.domain.type.AccountStatus;
 import com.jungmini.pay.fixture.AccountFactory;
+import com.jungmini.pay.fixture.FriendFactory;
+import com.jungmini.pay.fixture.FriendRequestFactory;
 import com.jungmini.pay.fixture.MemberFactory;
 import com.jungmini.pay.service.AccountService;
+import com.jungmini.pay.service.FriendService;
 import com.jungmini.pay.service.MemberService;
 import com.jungmini.pay.service.TokenService;
-import com.jungmini.pay.domain.type.AccountStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +48,9 @@ public class AccountControllerTest {
 
     @Autowired
     private TokenService tokenService;
+
+    @Autowired
+    private FriendService friendService;
 
     @DisplayName("통합테스트 계좌 생성 성공 - 첫 번째 계좌 생성")
     @Test
@@ -356,6 +363,242 @@ public class AccountControllerTest {
                                 .header("Auth", token)
                                 .content(objectMapper.writeValueAsString(request))
                                 .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.ACCOUNT_NOT_FOUND.toString()))
+                .andExpect(jsonPath("$.message").value(ErrorCode.ACCOUNT_NOT_FOUND.getDescription()))
+                .andDo(print());
+    }
+
+    @DisplayName("통합테스트 송금 성공")
+    @Test
+    void remit_success() throws Exception{
+        int remitterBalance = 10000;
+        int recipientBalance = 100;
+        int amount = 500;
+        Member remitter = MemberFactory.memberFrom("remitter@test.com", "123465789");
+        Member recipient = MemberFactory.memberFrom("recipient@test.com", "123456789");
+
+        // 회원가입
+        memberService.signUp(remitter);
+        memberService.signUp(recipient);
+        // 로그인
+        String remitterToken = tokenService.generateToken(remitter.getEmail());
+        String recipientToken = tokenService.generateToken(remitter.getEmail());
+        // 계좌생성
+        Account remitterAccount = accountService.createAccount(remitter);
+        Account recipientAccount = accountService.createAccount(recipient);
+        // 잔액 충전
+        accountService.chargePoint(remitterBalance, remitterAccount, remitter);
+        accountService.chargePoint(recipientBalance, recipientAccount, recipient);
+        // 친구관계 생성
+        FriendRequest friendRequest = FriendRequest.from(remitter, recipient);
+        FriendRequest savedRequest = friendService.requestFriend(friendRequest);
+        friendService.acceptFriendRequest(savedRequest.getId());
+        // 송금
+        AccountDTO.RemitRequest remitRequest = AccountDTO.RemitRequest.builder()
+                .amount(amount)
+                .recipientsAccountNumber(recipientAccount.getAccountNumber())
+                .remitterAccountNumber(remitterAccount.getAccountNumber())
+                .build();
+
+        mvc.perform(
+                        post("/accounts/remit")
+                                .header("Auth", remitterToken)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(remitRequest)))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.amount").value(amount))
+                .andExpect(jsonPath("$.recipientsAccountNumber").value(recipientAccount.getAccountNumber()))
+                .andExpect(jsonPath("$.remitterAccountNumber").value(remitterAccount.getAccountNumber()))
+                .andExpect(jsonPath("createdAt").exists())
+                .andDo(print());
+    }
+
+    @DisplayName("통합테스트 송금 실패 - 잔액 부족")
+    @Test
+    void remit_fail_lack_of_balance() throws Exception{
+        int remitterBalance = 10000;
+        int recipientBalance = 100;
+        int amount = 500000;
+        Member remitter = MemberFactory.memberFrom("remitter@test.com", "123465789");
+        Member recipient = MemberFactory.memberFrom("recipient@test.com", "123456789");
+
+        // 회원가입
+        memberService.signUp(remitter);
+        memberService.signUp(recipient);
+        // 로그인
+        String remitterToken = tokenService.generateToken(remitter.getEmail());
+        String recipientToken = tokenService.generateToken(remitter.getEmail());
+        // 계좌생성
+        Account remitterAccount = accountService.createAccount(remitter);
+        Account recipientAccount = accountService.createAccount(recipient);
+        // 잔액 충전
+        accountService.chargePoint(remitterBalance, remitterAccount, remitter);
+        accountService.chargePoint(recipientBalance, recipientAccount, recipient);
+        // 친구관계 생성
+        FriendRequest friendRequest = FriendRequest.from(remitter, recipient);
+        FriendRequest savedRequest = friendService.requestFriend(friendRequest);
+        friendService.acceptFriendRequest(savedRequest.getId());
+        // 송금
+        AccountDTO.RemitRequest remitRequest = AccountDTO.RemitRequest.builder()
+                .amount(amount)
+                .recipientsAccountNumber(recipientAccount.getAccountNumber())
+                .remitterAccountNumber(remitterAccount.getAccountNumber())
+                .build();
+
+        mvc.perform(
+                        post("/accounts/remit")
+                                .header("Auth", remitterToken)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(remitRequest)))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.LACK_OF_BALANCE.toString()))
+                .andExpect(jsonPath("$.message").value(ErrorCode.LACK_OF_BALANCE.getDescription()))
+                .andDo(print());
+    }
+
+    @DisplayName("통합테스트 송금 실패 - 친구 아닌 계좌에 송금")
+    @Test
+    void remit_fail_not_friend() throws Exception{
+        int remitterBalance = 10000;
+        int recipientBalance = 100;
+        int amount = 500;
+        Member remitter = MemberFactory.memberFrom("remitter@test.com", "123465789");
+        Member recipient = MemberFactory.memberFrom("recipient@test.com", "123456789");
+
+        // 회원가입
+        memberService.signUp(remitter);
+        memberService.signUp(recipient);
+        // 로그인
+        String remitterToken = tokenService.generateToken(remitter.getEmail());
+        String recipientToken = tokenService.generateToken(remitter.getEmail());
+        // 계좌생성
+        Account remitterAccount = accountService.createAccount(remitter);
+        Account recipientAccount = accountService.createAccount(recipient);
+        // 잔액 충전
+        accountService.chargePoint(remitterBalance, remitterAccount, remitter);
+        accountService.chargePoint(recipientBalance, recipientAccount, recipient);
+        // 송금
+        AccountDTO.RemitRequest remitRequest = AccountDTO.RemitRequest.builder()
+                .amount(amount)
+                .recipientsAccountNumber(recipientAccount.getAccountNumber())
+                .remitterAccountNumber(remitterAccount.getAccountNumber())
+                .build();
+
+        mvc.perform(
+                        post("/accounts/remit")
+                                .header("Auth", remitterToken)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(remitRequest)))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.NOT_FRIENDS.toString()))
+                .andExpect(jsonPath("$.message").value(ErrorCode.NOT_FRIENDS.getDescription()))
+                .andDo(print());
+    }
+
+    @DisplayName("통합테스트 송금 실패 - 토큰 X")
+    @Test
+    void remit_fail_without_token() throws Exception{
+        int remitterBalance = 10000;
+        int recipientBalance = 100;
+        int amount = 500;
+        Member remitter = MemberFactory.memberFrom("remitter@test.com", "123465789");
+        Member recipient = MemberFactory.memberFrom("recipient@test.com", "123456789");
+
+        // 회원가입
+        memberService.signUp(remitter);
+        memberService.signUp(recipient);
+        // 계좌생성
+        Account remitterAccount = accountService.createAccount(remitter);
+        Account recipientAccount = accountService.createAccount(recipient);
+        // 잔액 충전
+        accountService.chargePoint(remitterBalance, remitterAccount, remitter);
+        accountService.chargePoint(recipientBalance, recipientAccount, recipient);
+        // 송금
+        AccountDTO.RemitRequest remitRequest = AccountDTO.RemitRequest.builder()
+                .amount(amount)
+                .recipientsAccountNumber(recipientAccount.getAccountNumber())
+                .remitterAccountNumber(remitterAccount.getAccountNumber())
+                .build();
+
+        mvc.perform(
+                        post("/accounts/remit")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(remitRequest)))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.UN_AUTHORIZED.toString()))
+                .andExpect(jsonPath("$.message").value(ErrorCode.UN_AUTHORIZED.getDescription()))
+                .andDo(print());
+    }
+
+    @DisplayName("통합테스트 송금 실패 - 계좌 소유주가 아닌 경우")
+    @Test
+    void remit_fail_not_owner() throws Exception{
+        int remitterBalance = 10000;
+        int recipientBalance = 100;
+        int amount = 500;
+        Member remitter = MemberFactory.memberFrom("remitter@test.com", "123465789");
+        Member recipient = MemberFactory.memberFrom("recipient@test.com", "123456789");
+        Member member = MemberFactory.memberFrom("test@test.com", "123456789");
+
+        // 회원가입
+        memberService.signUp(remitter);
+        memberService.signUp(recipient);
+        memberService.signUp(member);
+        // 로그인
+        String remitterToken = tokenService.generateToken(remitter.getEmail());
+        String recipientToken = tokenService.generateToken(recipient.getEmail());
+        String memberToken = tokenService.generateToken(member.getEmail());
+        // 계좌생성
+        Account remitterAccount = accountService.createAccount(remitter);
+        Account recipientAccount = accountService.createAccount(recipient);
+        // 잔액 충전
+        accountService.chargePoint(remitterBalance, remitterAccount, remitter);
+        accountService.chargePoint(recipientBalance, recipientAccount, recipient);
+        // 송금
+        AccountDTO.RemitRequest remitRequest = AccountDTO.RemitRequest.builder()
+                .amount(amount)
+                .recipientsAccountNumber(recipientAccount.getAccountNumber())
+                .remitterAccountNumber(remitterAccount.getAccountNumber())
+                .build();
+
+        mvc.perform(
+                        post("/accounts/remit")
+                                .header("Auth", memberToken)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(remitRequest)))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.REQUESTER_IS_NOT_OWNER.toString()))
+                .andExpect(jsonPath("$.message").value(ErrorCode.REQUESTER_IS_NOT_OWNER.getDescription()))
+                .andDo(print());
+    }
+
+    @DisplayName("통합테스트 송금 실패 - 존재 하지 않는 계좌인 경우")
+    @Test
+    void remit_fail_account_not_found() throws Exception{
+        int remitterBalance = 10000;
+        int recipientBalance = 100;
+        int amount = 500;
+        Member remitter = MemberFactory.memberFrom("remitter@test.com", "123465789");
+        Member recipient = MemberFactory.memberFrom("recipient@test.com", "123456789");
+        // 회원가입
+        memberService.signUp(remitter);
+        memberService.signUp(recipient);
+        // 로그인
+        String remitterToken = tokenService.generateToken(remitter.getEmail());
+        String recipientToken = tokenService.generateToken(recipient.getEmail());
+        // 송금
+        AccountDTO.RemitRequest remitRequest = AccountDTO.RemitRequest.builder()
+                .amount(amount)
+                .recipientsAccountNumber("100000000001")
+                .remitterAccountNumber("100000000000")
+                .build();
+
+        mvc.perform(
+                        post("/accounts/remit")
+                                .header("Auth", remitterToken)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(remitRequest)))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.errorCode").value(ErrorCode.ACCOUNT_NOT_FOUND.toString()))
                 .andExpect(jsonPath("$.message").value(ErrorCode.ACCOUNT_NOT_FOUND.getDescription()))

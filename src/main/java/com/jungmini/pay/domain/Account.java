@@ -10,6 +10,7 @@ import lombok.*;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode(callSuper = false) // 부모 필드 값은 확인 안하도록 설정
 @Entity
 public class Account extends BaseTimeEntity implements AccountNumber {
 
@@ -17,13 +18,13 @@ public class Account extends BaseTimeEntity implements AccountNumber {
     private String accountNumber;
 
     @Enumerated(value = EnumType.STRING)
-    private AccountStatus accountStatus;
+    @EqualsAndHashCode.Exclude private AccountStatus accountStatus;
 
     @ManyToOne
     @JoinColumn(name = "email")
-    private Member owner;
+    @EqualsAndHashCode.Exclude private Member owner;
 
-    private long balance;
+    @EqualsAndHashCode.Exclude private long balance;
 
     public static final String DEFAULT_ACCOUNT_NUMBER = "100000000000";
     public static final int MAX_ACCOUNT_SIZE = 10;
@@ -47,6 +48,18 @@ public class Account extends BaseTimeEntity implements AccountNumber {
         }
 
         this.balance += amount;
+    }
+
+    public void plusAmount(int amount) {
+        this.balance += amount;
+    }
+
+    public void minusAmount(int amount) {
+        if (this.balance < amount) {
+            throw new PayException(ErrorCode.LACK_OF_BALANCE);
+        }
+
+        this.balance -= amount;
     }
 
     /**

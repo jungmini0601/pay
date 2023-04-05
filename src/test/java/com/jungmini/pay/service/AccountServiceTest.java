@@ -1,13 +1,19 @@
 package com.jungmini.pay.service;
 
-import com.jungmini.pay.domain.Account;
-import com.jungmini.pay.domain.Member;
 import com.jungmini.pay.common.exception.ErrorCode;
 import com.jungmini.pay.common.exception.PayException;
+import com.jungmini.pay.domain.Account;
+import com.jungmini.pay.domain.Member;
+import com.jungmini.pay.domain.Transaction;
+import com.jungmini.pay.domain.type.AccountStatus;
+import com.jungmini.pay.domain.type.TransactionResultType;
+import com.jungmini.pay.domain.type.TransactionType;
 import com.jungmini.pay.fixture.AccountFactory;
 import com.jungmini.pay.fixture.MemberFactory;
+import com.jungmini.pay.fixture.TransactionFactory;
 import com.jungmini.pay.repository.AccountRepository;
-import com.jungmini.pay.domain.type.AccountStatus;
+import com.jungmini.pay.repository.FriendRepository;
+import com.jungmini.pay.repository.TransactionRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,12 +28,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
+
 
 @ExtendWith(MockitoExtension.class)
 class AccountServiceTest {
 
     @Mock
     private AccountRepository accountRepository;
+
+    @Mock
+    private FriendRepository friendRepository;
+
+    @Mock
+    private TransactionRepository transactionRepository;
+
 
     @InjectMocks
     private AccountService accountService;
@@ -101,4 +116,98 @@ class AccountServiceTest {
         assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.ACCOUNT_NOT_FOUND.getDescription());
     }
 
+    @Test
+    @DisplayName("송금 성공")
+    void remit_success() {
+        int remitterBalance = 10000;
+        int recipientBalance = 100;
+        int amount = 500;
+        Member remitter = MemberFactory.memberFrom("remitter@test.com");
+        Member recipient = MemberFactory.memberFrom("recipient@test.com");
+        Account remitterAccount = AccountFactory.accountFromOwnerAndBalance(remitter, remitterBalance);
+        Account recipientAccount = AccountFactory.accountFromOwnerAndBalance(recipient, recipientBalance);
+        Transaction transaction = TransactionFactory
+                .transactionRequest(remitterAccount, recipientAccount, amount);
+
+        when(accountRepository.findById(any()))
+                .thenReturn(Optional.of(recipientAccount))
+                .thenReturn(Optional.of(remitterAccount));
+
+        when(friendRepository.existsFriendByRecipientAndRequester(any(), any()))
+                .thenReturn(true)
+                .thenReturn(false);
+
+        when(transactionRepository.save(any()))
+                .thenReturn(transaction);
+
+        Transaction savedTransaction = accountService.remit(transaction, remitter);
+
+        assertThat(savedTransaction.getTransactionType()).isEqualTo(TransactionType.REMIT);
+        assertThat(savedTransaction.getTransactionResultType()).isEqualTo(TransactionResultType.SUCCESS);
+        assertThat(savedTransaction.getRemitterAccount()).isEqualTo(remitterAccount);
+        assertThat(savedTransaction.getBalanceSnapshot()).isEqualTo(remitterBalance);
+        assertThat(savedTransaction.getAmount()).isEqualTo(amount);
+        assertThat(savedTransaction.getRecipientAccount().getBalance()).isEqualTo(recipientBalance + amount);
+        assertThat(savedTransaction.getRemitterAccount().getBalance()).isEqualTo(remitterBalance - amount);
+    }
+
+    @Test
+    @DisplayName("송금 실패 - 친구가 아닌 관계 송금 실패 정보를 저장")
+    void when_remit_fail_transaction_fail_saved() {
+        int remitterBalance = 10000;
+        int recipientBalance = 100;
+        int amount = 500;
+        Member remitter = MemberFactory.memberFrom("remitter@test.com");
+        Member recipient = MemberFactory.memberFrom("recipient@test.com");
+        Account remitterAccount = AccountFactory.accountFromOwnerAndBalance(remitter, remitterBalance);
+        Account recipientAccount = AccountFactory.accountFromOwnerAndBalance(recipient, recipientBalance);
+        Transaction transaction = TransactionFactory
+                .transactionRequest(remitterAccount, recipientAccount, amount);
+
+        when(accountRepository.findById(any()))
+                .thenReturn(Optional.of(recipientAccount))
+                .thenReturn(Optional.of(remitterAccount))
+                .thenReturn(Optional.of(recipientAccount))
+                .thenReturn(Optional.of(remitterAccount));
+
+        when(friendRepository.existsFriendByRecipientAndRequester(any(), any()))
+                .thenReturn(false)
+                .thenReturn(false);
+
+        PayException payException = assertThrows(PayException.class,
+                () -> accountService.remit(transaction, remitter));
+
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.NOT_FRIENDS.toString());
+        assertThat(transaction.getTransactionResultType()).isEqualTo(TransactionResultType.FAIL);
+        assertThat(transaction.getAmount()).isEqualTo(amount);
+        assertThat(remitterAccount.getBalance()).isEqualTo(remitterBalance);
+        assertThat(recipientAccount.getBalance()).isEqualTo(recipientBalance);
+    }
+
+    @Test
+    @DisplayName("송금 실패 - 친구가 계좌 못 찾음 정보 저장 X")
+    void when_remit_fail_account_not_found() {
+        int remitterBalance = 10000;
+        int recipientBalance = 100;
+        int amount = 500;
+        Member remitter = MemberFactory.memberFrom("remitter@test.com");
+        Member recipient = MemberFactory.memberFrom("recipient@test.com");
+        Account remitterAccount = AccountFactory.accountFromOwnerAndBalance(remitter, remitterBalance);
+        Account recipientAccount = AccountFactory.accountFromOwnerAndBalance(recipient, recipientBalance);
+        Transaction transaction = TransactionFactory
+                .transactionRequest(remitterAccount, recipientAccount, amount);
+
+        when(accountRepository.findById(any()))
+                .thenReturn(Optional.empty());
+
+
+        PayException payException = assertThrows(PayException.class,
+                () -> accountService.remit(transaction, remitter));
+
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.ACCOUNT_NOT_FOUND.toString());
+        assertThat(transaction.getTransactionResultType()).isNull();
+        assertThat(transaction.getAmount()).isEqualTo(amount);
+        assertThat(remitterAccount.getBalance()).isEqualTo(remitterBalance);
+        assertThat(recipientAccount.getBalance()).isEqualTo(recipientBalance);
+    }
 }

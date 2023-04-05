@@ -12,3 +12,14 @@ Content-Type: application/json
   "amount": 10000,
   "accountNumber": "100000000000"
 }
+
+### 포인트 충전
+POST http://localhost:8080/accounts/remit
+Auth: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZXhwIjoxNjgwMzUxMjUwfQ.VznCLWRPLsC-dxuMfi3aXtkv-5c-hZzFE_AsZlWTdgFsJnC4wyuUIAbIyh8Pd8QxFgfA7uRdngBFEkERTP1Yiw
+Content-Type: application/json
+
+{
+  "amount":500,
+  "recipientsAccountNumber":"100000000001",
+  "remitterAccountNumber":"100000000000"
+}
