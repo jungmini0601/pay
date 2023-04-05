@@ -81,16 +81,8 @@ public class AccountService {
         }
     }
 
-    @Transactional(readOnly = true)
-    public Account getAccountInfo(String accountNumber, Member member) {
-        Account account = accountRepository.findById(accountNumber)
-                .orElseThrow(() -> new PayException(ErrorCode.ACCOUNT_NOT_FOUND));
-        validateOwner(member, account);
-        return account;
-    }
-
-    private static void validateOwner(Member owner, Account account) {
-        if (!owner.equals(account.getOwner())) {
+    private static void validateOwner(Member remitter, Account remitterAccount) {
+        if (!remitter.equals(remitterAccount.getOwner())) {
             throw new PayException(ErrorCode.REQUESTER_IS_NOT_OWNER);
         }
     }
