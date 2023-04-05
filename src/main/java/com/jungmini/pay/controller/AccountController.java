@@ -11,9 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -52,5 +50,17 @@ public class AccountController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(AccountDTO.RemitResponse.from(transaction));
+    }
+
+    @GetMapping("/accounts/{accountNumber}")
+    public ResponseEntity<AccountDTO.GetAccountResponse> getAccountInfo(
+            @PathVariable String accountNumber,
+            @SigninMember Member member
+    ) {
+        Account.validateAccountNumber(accountNumber);
+        Account account = accountService.getAccountInfo(accountNumber, member);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(AccountDTO.GetAccountResponse.from(account));
     }
 }

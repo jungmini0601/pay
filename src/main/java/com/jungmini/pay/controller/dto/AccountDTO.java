@@ -120,4 +120,25 @@ public class AccountDTO {
                     .build();
         }
     }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class GetAccountResponse {
+
+        private long balance;
+        private String accountNumber;
+        private String ownerEmail;
+        private LocalDateTime createdAt;
+
+        public static GetAccountResponse from(Account account) {
+            return GetAccountResponse.builder()
+                    .balance(account.getBalance())
+                    .ownerEmail(account.getOwner().getEmail())
+                    .createdAt(account.getCreatedAt())
+                    .accountNumber(account.getAccountNumber())
+                    .build();
+        }
+    }
 }
