@@ -41,4 +41,11 @@ public class FriendFactory {
                 .requester(requester)
                 .build();
     }
+
+    public static Friend from(Member requester, Member recipient) {
+        return Friend.builder()
+                .recipient(recipient)
+                .requester(requester)
+                .build();
+    }
 }

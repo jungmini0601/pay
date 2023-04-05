@@ -11,4 +11,17 @@ public class MemberFactory {
                 .name("test")
                 .build();
     }
+
+    public static Member memberFrom(String email) {
+        return Member.builder()
+                .email(email)
+                .build();
+    }
+
+    public static Member memberFrom(String email, String password) {
+        return Member.builder()
+                .email(email)
+                .password(password)
+                .build();
+    }
 }

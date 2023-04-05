@@ -19,6 +19,9 @@ public enum ErrorCode {
     ACCOUNT_SIZE_EXCEED("최대 계좌 개설 수를 초과 했습니다."),
     ACCOUNT_NOT_FOUND("존재 하지 않는 계좌 입니다."),
     REQUESTER_IS_NOT_OWNER("계좌 소유주가 아닙니다."),
+    ILLEGAL_TRANSACTION_STATE("유효하지 않은 거래 상태입니다."),
+    LACK_OF_BALANCE("잔액이 부족 합니다"),
+    NOT_FRIENDS("친구 관계만 송금이 가능합니다"),
     UN_AUTHORIZED("로그인이 필요 합니다.");
     private final String description;
 
