@@ -210,4 +210,49 @@ class AccountServiceTest {
         assertThat(remitterAccount.getBalance()).isEqualTo(remitterBalance);
         assertThat(recipientAccount.getBalance()).isEqualTo(recipientBalance);
     }
+
+    @Test
+    @DisplayName("계좌 상세 조회 성공")
+    void get_account_info_success() {
+        Account account = AccountFactory.account();
+        Member owner = account.getOwner();
+
+        when(accountRepository.findById(any()))
+                .thenReturn(Optional.of(account));
+
+        Account findedAccount = accountService.getAccountInfo(account.getAccountNumber(), owner);
+        assertThat(findedAccount).isEqualTo(account);
+    }
+
+    @Test
+    @DisplayName("계좌 상세 조회 실패 - 계좌 조회 못찾음")
+    void get_account_info_fail_account_not_found() {
+        Account account = AccountFactory.account();
+        Member owner = account.getOwner();
+
+        when(accountRepository.findById(any()))
+                .thenReturn(Optional.empty());
+
+        PayException payException = assertThrows(PayException.class,
+                () -> accountService.getAccountInfo(account.getAccountNumber(), owner));
+
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.ACCOUNT_NOT_FOUND.toString());
+        assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.ACCOUNT_NOT_FOUND.getDescription());
+    }
+
+    @Test
+    @DisplayName("계좌 상세 조회 실패 - 본인 계좌가 아닌 정보 요청")
+    void get_account_info_fail_requester_is_not_owner() {
+        Account account = AccountFactory.account();
+        Member member = MemberFactory.memberFrom("dhasdfjkashdhf@naver.com");
+
+        when(accountRepository.findById(any()))
+                .thenReturn(Optional.of(account));
+
+        PayException payException = assertThrows(PayException.class,
+                () -> accountService.getAccountInfo(account.getAccountNumber(), member));
+
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.REQUESTER_IS_NOT_OWNER.toString());
+        assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.REQUESTER_IS_NOT_OWNER.getDescription());
+    }
 }

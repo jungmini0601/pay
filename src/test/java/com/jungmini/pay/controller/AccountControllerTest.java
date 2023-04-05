@@ -24,6 +24,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -602,6 +603,87 @@ public class AccountControllerTest {
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.errorCode").value(ErrorCode.ACCOUNT_NOT_FOUND.toString()))
                 .andExpect(jsonPath("$.message").value(ErrorCode.ACCOUNT_NOT_FOUND.getDescription()))
+                .andDo(print());
+    }
+
+    @DisplayName("통합테스트 계좌 상세 조회 성공")
+    @Test
+    void get_account_info_success() throws Exception {
+        Member member = MemberFactory.memberFrom("test@test.com", "123456789");
+        //회원가입
+        memberService.signUp(member);
+        //로그인
+        String token = tokenService.generateToken(member.getEmail());
+        //계좌생성
+        Account account = accountService.createAccount(member);
+        //계좌조회
+        mvc.perform(
+                get("/accounts/" + account.getAccountNumber())
+                        .header("Auth", token))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.balance").value(account.getBalance()))
+                .andExpect(jsonPath("$.ownerEmail").value(account.getOwner().getEmail()))
+                .andExpect(jsonPath("$.accountNumber").value(account.getAccountNumber()))
+                .andExpect(jsonPath("$.createdAt").exists())
+                .andDo(print());
+    }
+
+    @DisplayName("통합테스트 계좌 상세 조회 실패 - 토큰 X")
+    @Test
+    void get_account_info_fail_without_token() throws Exception {
+        Member member = MemberFactory.memberFrom("test@test.com", "123456789");
+        //회원가입
+        memberService.signUp(member);
+        //계좌생성
+        Account account = accountService.createAccount(member);
+        //계좌조회
+        mvc.perform(
+                        get("/accounts/" + account.getAccountNumber()))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.UN_AUTHORIZED.toString()))
+                .andExpect(jsonPath("$.message").value(ErrorCode.UN_AUTHORIZED.getDescription()))
+                .andDo(print());
+    }
+
+    @DisplayName("통합테스트 계좌 상세 조회 실패 - 계좌 소유주 아님")
+    @Test
+    void get_account_info_fail_not_owner() throws Exception {
+        Member member = MemberFactory.memberFrom("test@test.com", "123456789");
+        Member member2 = MemberFactory.memberFrom("test2@test.com", "123456789");
+        //회원가입
+        memberService.signUp(member);
+        memberService.signUp(member2);
+        //로그인
+        String token = tokenService.generateToken(member.getEmail());
+        //계좌생성
+        Account account = accountService.createAccount(member);
+        Account account2 = accountService.createAccount(member2);
+        //계좌조회
+        mvc.perform(
+                        get("/accounts/" + account2.getAccountNumber())
+                                .header("Auth", token))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.REQUESTER_IS_NOT_OWNER.toString()))
+                .andExpect(jsonPath("$.message").value(ErrorCode.REQUESTER_IS_NOT_OWNER.getDescription()))
+                .andDo(print());
+    }
+
+    @DisplayName("통합테스트 계좌 상세 조회 실패 - 계좌 번호 검증 실패")
+    @Test
+    void get_account_info_fail_invalid_account_number() throws Exception {
+        Member member = MemberFactory.memberFrom("test@test.com", "123456789");
+        String invalidAccountNumber = "105";
+        //회원가입
+        memberService.signUp(member);
+        //로그인
+        String token = tokenService.generateToken(member.getEmail());
+        //계좌조회
+        mvc.perform(
+                        get("/accounts/" + invalidAccountNumber)
+                                .header("Auth", token))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.ILLEGAL_ACCOUNT_NUMBER.toString()))
+                .andExpect(jsonPath("$.message").value(ErrorCode.ILLEGAL_ACCOUNT_NUMBER.getDescription()))
                 .andDo(print());
     }
 }
