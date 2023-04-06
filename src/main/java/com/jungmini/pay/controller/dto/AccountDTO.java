@@ -141,4 +141,29 @@ public class AccountDTO {
                     .build();
         }
     }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class GetTransactionResponse {
+
+        private long id;
+        private String transactionType;
+        private String transactionResultType;
+        private int amount;
+        private String recipientAccountNumber;
+        private String remitterAccountNumber;
+
+        public static GetTransactionResponse from(Transaction transaction) {
+            return GetTransactionResponse.builder()
+                    .id(transaction.getId())
+                    .transactionType(transaction.getTransactionType().toString())
+                    .transactionResultType(transaction.getTransactionResultType().toString())
+                    .amount(transaction.getAmount())
+                    .recipientAccountNumber(transaction.getRecipientAccount().getAccountNumber())
+                    .remitterAccountNumber(transaction.getRemitterAccount().getAccountNumber())
+                    .build();
+        }
+    }
 }

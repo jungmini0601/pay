@@ -6,11 +6,9 @@ import com.jungmini.pay.controller.dto.AccountDTO;
 import com.jungmini.pay.domain.Account;
 import com.jungmini.pay.domain.FriendRequest;
 import com.jungmini.pay.domain.Member;
+import com.jungmini.pay.domain.Transaction;
 import com.jungmini.pay.domain.type.AccountStatus;
-import com.jungmini.pay.fixture.AccountFactory;
-import com.jungmini.pay.fixture.FriendFactory;
-import com.jungmini.pay.fixture.FriendRequestFactory;
-import com.jungmini.pay.fixture.MemberFactory;
+import com.jungmini.pay.fixture.*;
 import com.jungmini.pay.service.AccountService;
 import com.jungmini.pay.service.FriendService;
 import com.jungmini.pay.service.MemberService;
@@ -681,6 +679,165 @@ public class AccountControllerTest {
         mvc.perform(
                         get("/accounts/" + invalidAccountNumber)
                                 .header("Auth", token))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.ILLEGAL_ACCOUNT_NUMBER.toString()))
+                .andExpect(jsonPath("$.message").value(ErrorCode.ILLEGAL_ACCOUNT_NUMBER.getDescription()))
+                .andDo(print());
+    }
+
+    @DisplayName("통합테스트 거래 내역 조회 성공")
+    @Test
+    void get_transactions_success() throws Exception {
+        int remitterBalance = 10000;
+        int recipientBalance = 100;
+        int amount = 500;
+        Member remitter = MemberFactory.memberFrom("remitter@test.com", "123465789");
+        Member recipient = MemberFactory.memberFrom("recipient@test.com", "123456789");
+
+        // 회원가입
+        memberService.signUp(remitter);
+        memberService.signUp(recipient);
+        // 로그인
+        String remitterToken = tokenService.generateToken(remitter.getEmail());
+        // 계좌생성
+        Account remitterAccount = accountService.createAccount(remitter);
+        Account recipientAccount = accountService.createAccount(recipient);
+        // 잔액 충전
+        accountService.chargePoint(remitterBalance, remitterAccount, remitter);
+        accountService.chargePoint(recipientBalance, recipientAccount, recipient);
+        // 친구관계 생성
+        FriendRequest friendRequest = FriendRequest.from(remitter, recipient);
+        FriendRequest savedRequest = friendService.requestFriend(friendRequest);
+        friendService.acceptFriendRequest(savedRequest.getId());
+        // 송금
+        Transaction request1 = TransactionFactory.transactionRequest(remitterAccount, recipientAccount, amount);
+        Transaction request2 = TransactionFactory.transactionRequest(remitterAccount, recipientAccount, amount);
+        accountService.remit(request1, remitter);
+        accountService.remit(request2, remitter);
+        // 거래 내역 조회
+        mvc.perform(
+                get(String.format("/accounts/%s/transactions?page=0&size=20", remitterAccount.getAccountNumber()))
+                        .header("Auth", remitterToken))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.[0]").exists())
+                .andExpect(jsonPath("$.[1]").exists())
+                .andDo(print());
+    }
+
+    @DisplayName("통합테스트 거래 내역 조회 실패 - 내 계좌가 아닌 경우")
+    @Test
+    void get_transactions_fail_requeseter_not_onwer() throws Exception {
+        int remitterBalance = 10000;
+        int recipientBalance = 100;
+        int amount = 500;
+        Member remitter = MemberFactory.memberFrom("remitter@test.com", "123465789");
+        Member recipient = MemberFactory.memberFrom("recipient@test.com", "123456789");
+
+        // 회원가입
+        memberService.signUp(remitter);
+        memberService.signUp(recipient);
+        // 로그인
+        String remitterToken = tokenService.generateToken(remitter.getEmail());
+        String recipientToken = tokenService.generateToken(recipient.getEmail());
+        // 계좌생성
+        Account remitterAccount = accountService.createAccount(remitter);
+        Account recipientAccount = accountService.createAccount(recipient);
+        // 잔액 충전
+        accountService.chargePoint(remitterBalance, remitterAccount, remitter);
+        accountService.chargePoint(recipientBalance, recipientAccount, recipient);
+        // 친구관계 생성
+        FriendRequest friendRequest = FriendRequest.from(remitter, recipient);
+        FriendRequest savedRequest = friendService.requestFriend(friendRequest);
+        friendService.acceptFriendRequest(savedRequest.getId());
+        // 송금
+        Transaction request1 = TransactionFactory.transactionRequest(remitterAccount, recipientAccount, amount);
+        Transaction request2 = TransactionFactory.transactionRequest(remitterAccount, recipientAccount, amount);
+        accountService.remit(request1, remitter);
+        accountService.remit(request2, remitter);
+        // 거래 내역 조회
+        mvc.perform(
+                        get(String.format("/accounts/%s/transactions?page=0&size=20", remitterAccount.getAccountNumber()))
+                                .header("Auth", recipientToken))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.REQUESTER_IS_NOT_OWNER.toString()))
+                .andExpect(jsonPath("$.message").value(ErrorCode.REQUESTER_IS_NOT_OWNER.getDescription()))
+                .andDo(print());
+    }
+
+    @DisplayName("통합테스트 거래 내역 조회 실패 - 계좌 못 찾은 경우")
+    @Test
+    void get_transactions_fail_account_not_found() throws Exception {
+        int remitterBalance = 10000;
+        int recipientBalance = 100;
+        int amount = 500;
+        Member remitter = MemberFactory.memberFrom("remitter@test.com", "123465789");
+        Member recipient = MemberFactory.memberFrom("recipient@test.com", "123456789");
+
+        // 회원가입
+        memberService.signUp(remitter);
+        memberService.signUp(recipient);
+        // 로그인
+        String remitterToken = tokenService.generateToken(remitter.getEmail());
+        String recipientToken = tokenService.generateToken(recipient.getEmail());
+        // 계좌생성
+        Account remitterAccount = accountService.createAccount(remitter);
+        Account recipientAccount = accountService.createAccount(recipient);
+        // 잔액 충전
+        accountService.chargePoint(remitterBalance, remitterAccount, remitter);
+        accountService.chargePoint(recipientBalance, recipientAccount, recipient);
+        // 친구관계 생성
+        FriendRequest friendRequest = FriendRequest.from(remitter, recipient);
+        FriendRequest savedRequest = friendService.requestFriend(friendRequest);
+        friendService.acceptFriendRequest(savedRequest.getId());
+        // 송금
+        Transaction request1 = TransactionFactory.transactionRequest(remitterAccount, recipientAccount, amount);
+        Transaction request2 = TransactionFactory.transactionRequest(remitterAccount, recipientAccount, amount);
+        accountService.remit(request1, remitter);
+        accountService.remit(request2, remitter);
+        // 거래 내역 조회
+        mvc.perform(
+                        get(String.format("/accounts/%s/transactions?page=0&size=20", "100008888888"))
+                                .header("Auth", recipientToken))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.ACCOUNT_NOT_FOUND.toString()))
+                .andExpect(jsonPath("$.message").value(ErrorCode.ACCOUNT_NOT_FOUND.getDescription()))
+                .andDo(print());
+    }
+
+    @DisplayName("통합테스트 거래 내역 조회 실패 - 유효 하지 않은 계좌 번호")
+    @Test
+    void get_transactions_fail_illegal_account_number() throws Exception {
+        int remitterBalance = 10000;
+        int recipientBalance = 100;
+        int amount = 500;
+        Member remitter = MemberFactory.memberFrom("remitter@test.com", "123465789");
+        Member recipient = MemberFactory.memberFrom("recipient@test.com", "123456789");
+
+        // 회원가입
+        memberService.signUp(remitter);
+        memberService.signUp(recipient);
+        // 로그인
+        String remitterToken = tokenService.generateToken(remitter.getEmail());
+        String recipientToken = tokenService.generateToken(recipient.getEmail());
+        // 계좌생성
+        Account remitterAccount = accountService.createAccount(remitter);
+        Account recipientAccount = accountService.createAccount(recipient);
+        // 잔액 충전
+        accountService.chargePoint(remitterBalance, remitterAccount, remitter);
+        accountService.chargePoint(recipientBalance, recipientAccount, recipient);
+        // 친구관계 생성
+        FriendRequest friendRequest = FriendRequest.from(remitter, recipient);
+        FriendRequest savedRequest = friendService.requestFriend(friendRequest);
+        friendService.acceptFriendRequest(savedRequest.getId());
+        // 송금
+        Transaction request1 = TransactionFactory.transactionRequest(remitterAccount, recipientAccount, amount);
+        Transaction request2 = TransactionFactory.transactionRequest(remitterAccount, recipientAccount, amount);
+        accountService.remit(request1, remitter);
+        accountService.remit(request2, remitter);
+        // 거래 내역 조회
+        mvc.perform(
+                        get(String.format("/accounts/%s/transactions?page=0&size=20", "10000888888z"))
+                                .header("Auth", recipientToken))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.errorCode").value(ErrorCode.ILLEGAL_ACCOUNT_NUMBER.toString()))
                 .andExpect(jsonPath("$.message").value(ErrorCode.ILLEGAL_ACCOUNT_NUMBER.getDescription()))

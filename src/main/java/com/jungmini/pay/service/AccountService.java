@@ -7,14 +7,18 @@ import com.jungmini.pay.domain.Transaction;
 import com.jungmini.pay.common.exception.ErrorCode;
 import com.jungmini.pay.common.exception.PayException;
 
+import com.jungmini.pay.domain.type.TransactionResultType;
 import com.jungmini.pay.domain.type.TransactionType;
 import com.jungmini.pay.repository.AccountRepository;
 import com.jungmini.pay.repository.FriendRepository;
 import com.jungmini.pay.repository.TransactionRepository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static com.jungmini.pay.domain.Account.MAX_ACCOUNT_SIZE;
 
@@ -66,7 +70,7 @@ public class AccountService {
             // 계좌 번호가 유효했을 경우에는 거래 정보 저장한다.
             if (!e.getErrorCode().equals("ACCOUNT_NOT_FOUND")) { // TODO PayException errorCode Enum 변환 필요
                 Account recipientAccount = accountRepository
-                        .findById(transactionRequest.getRecipientAccount().getAccountNumber())
+                        .findById(transactionRequest.getRecipientAccount().getAccountNumber()) // TODO 코드 중복 제거 예정
                         .orElseThrow(() -> new PayException(ErrorCode.ACCOUNT_NOT_FOUND));
 
                 Account remitterAccount = accountRepository
@@ -82,11 +86,21 @@ public class AccountService {
     }
 
     @Transactional(readOnly = true)
-    public Account getAccountInfo(String accountNumber, Member member) {
-        Account account = accountRepository.findById(accountNumber)
+    public Account getAccountInfo(String accountNumber, Member member) { // TODO member 파라미터 이름 수정
+        Account account = accountRepository.findById(accountNumber) // TODO 리팩토링
                 .orElseThrow(() -> new PayException(ErrorCode.ACCOUNT_NOT_FOUND));
         validateOwner(member, account);
         return account;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Transaction> getTransactions(String accountNumber, Member owner, Pageable pageable) {
+        Account account = accountRepository.findById(accountNumber)
+                .orElseThrow(() -> new PayException(ErrorCode.ACCOUNT_NOT_FOUND));
+        validateOwner(owner, account);
+        return transactionRepository
+                .findAllByRecipientAccountOrRemitterAccountAndTransactionResultTypeOrderByCreatedAtDesc
+                        (account, account, TransactionResultType.SUCCESS ,pageable);
     }
 
     private static void validateOwner(Member owner, Account account) {
