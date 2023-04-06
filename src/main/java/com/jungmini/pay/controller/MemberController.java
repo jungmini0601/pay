@@ -1,8 +1,10 @@
 package com.jungmini.pay.controller;
 
-import com.jungmini.pay.controller.dto.MemberDTO;
 import com.jungmini.pay.domain.Member;
+
+import com.jungmini.pay.controller.dto.MemberDTO;
 import com.jungmini.pay.service.MemberService;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

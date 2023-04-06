@@ -3,6 +3,7 @@ package com.jungmini.pay.service;
 import com.jungmini.pay.domain.Friend;
 import com.jungmini.pay.domain.FriendRequest;
 import com.jungmini.pay.domain.Member;
+
 import com.jungmini.pay.common.exception.ErrorCode;
 import com.jungmini.pay.common.exception.PayException;
 import com.jungmini.pay.repository.FriendRepository;

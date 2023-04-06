@@ -4,11 +4,11 @@ import com.jungmini.pay.domain.Account;
 import com.jungmini.pay.domain.AccountNumber;
 import com.jungmini.pay.domain.Member;
 import com.jungmini.pay.domain.Transaction;
-import com.jungmini.pay.common.exception.ErrorCode;
-import com.jungmini.pay.common.exception.PayException;
-
 import com.jungmini.pay.domain.type.TransactionResultType;
 import com.jungmini.pay.domain.type.TransactionType;
+
+import com.jungmini.pay.common.exception.ErrorCode;
+import com.jungmini.pay.common.exception.PayException;
 import com.jungmini.pay.repository.AccountRepository;
 import com.jungmini.pay.repository.FriendRepository;
 import com.jungmini.pay.repository.TransactionRepository;
@@ -72,13 +72,7 @@ public class AccountService {
             transactionRequest.successTransaction(recipientAccount, remitterAccount, TransactionType.REMIT);
             return transactionRepository.save(transactionRequest);
         } catch (PayException e) {
-            if (!e.getErrorCode().equals("ACCOUNT_NOT_FOUND")) { // TODO 시간 없음 나중에 고치기
-                Account recipientAccount = findAccount(transactionRequest.getRecipientAccount().getAccountNumber());
-                Account remitterAccount = findAccount(transactionRequest.getRemitterAccount().getAccountNumber());
-                transactionRequest.failTransaction(recipientAccount, remitterAccount, TransactionType.REMIT);
-                transactionRepository.save(transactionRequest);
-            }
-
+            saveFailTransaction(transactionRequest, e);
             throw e;
         }
     }
@@ -108,6 +102,15 @@ public class AccountService {
         return transactionRepository
                 .findAllByRecipientAccountOrRemitterAccountAndTransactionResultTypeOrderByCreatedAtDesc
                         (account, account, TransactionResultType.SUCCESS ,pageable);
+    }
+
+    private void saveFailTransaction(Transaction transactionRequest, PayException e) {
+        if (!e.getErrorCode().equals("ACCOUNT_NOT_FOUND")) { // TODO 시간 없음 나중에 고치기
+            Account recipientAccount = findAccount(transactionRequest.getRecipientAccount().getAccountNumber());
+            Account remitterAccount = findAccount(transactionRequest.getRemitterAccount().getAccountNumber());
+            transactionRequest.failTransaction(recipientAccount, remitterAccount, TransactionType.REMIT);
+            transactionRepository.save(transactionRequest);
+        }
     }
 
     private Account findAccount(String accountNumber) {
