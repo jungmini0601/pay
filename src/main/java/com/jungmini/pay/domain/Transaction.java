@@ -4,6 +4,7 @@ import com.jungmini.pay.common.exception.ErrorCode;
 import com.jungmini.pay.common.exception.PayException;
 import com.jungmini.pay.domain.type.TransactionResultType;
 import com.jungmini.pay.domain.type.TransactionType;
+
 import jakarta.persistence.*;
 import lombok.*;
 

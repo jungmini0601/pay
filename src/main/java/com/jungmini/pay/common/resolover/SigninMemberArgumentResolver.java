@@ -3,7 +3,7 @@ package com.jungmini.pay.common.resolover;
 import com.jungmini.pay.common.exception.ErrorCode;
 import com.jungmini.pay.common.exception.PayException;
 import com.jungmini.pay.repository.MemberRepository;
-import com.jungmini.pay.service.TokenService;
+import com.jungmini.pay.service.TokenServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
@@ -18,7 +18,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 public class SigninMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final MemberRepository memberRepository;
-    private final TokenService tokenService;
+    private final TokenServiceImpl tokenServiceImpl;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -33,7 +33,7 @@ public class SigninMemberArgumentResolver implements HandlerMethodArgumentResolv
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         String token = parseToken(request);
         checkAuthorization(token);
-        String email = tokenService.verifyToken(token);
+        String email = tokenServiceImpl.verifyToken(token);
         return memberRepository.findById(email)
                 .orElseThrow(() -> new PayException(ErrorCode.BAD_REQUEST));
     }

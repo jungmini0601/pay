@@ -3,11 +3,13 @@ package com.jungmini.pay.service;
 import com.jungmini.pay.domain.Friend;
 import com.jungmini.pay.domain.FriendRequest;
 import com.jungmini.pay.domain.Member;
+
 import com.jungmini.pay.common.exception.ErrorCode;
 import com.jungmini.pay.common.exception.PayException;
 import com.jungmini.pay.repository.FriendRepository;
 import com.jungmini.pay.repository.FriendRequestRepository;
 import com.jungmini.pay.repository.MemberRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -25,19 +27,17 @@ public class FriendService {
     private final FriendRequestRepository friendRequestRepository;
     private final FriendRepository friendRepository;
 
+    /**
+     * @param request 친구 요청 보낸자 친구 요청 받은자
+     * @return 친구 요청 정보
+     */
     @Transactional
     public FriendRequest requestFriend(FriendRequest request) {
         validationFriendRequest(request);
-
-        Member recipient = memberRepository.findById(request.getRecipient().getEmail())
-                .orElseThrow(() -> new PayException(ErrorCode.MEMBER_NOT_FOUND));
-
-        Member requester = memberRepository.findById(request.getRequester().getEmail())
-                .orElseThrow(() -> new PayException(ErrorCode.MEMBER_NOT_FOUND));
-
+        Member recipient = findMember(request.getRecipient().getEmail());
+        Member requester = findMember(request.getRequester().getEmail());
         checkExistsFriendFrom(recipient, requester);
         checkExistsFriendRequestFrom(recipient, requester);
-
         return friendRequestRepository.save(FriendRequest.from(requester, recipient));
     }
 
@@ -56,6 +56,9 @@ public class FriendService {
      *
      * 일반 적인 경우라면 필요하지 않다고 생각한다.
      * 하지만 친구 도메인이 송금 기능과 엮여있는 만큼 높은 정합성이 보장된 데이터를 전달해 주기 위해 사용한다.
+     *
+     * @Param recipient 요청 받은 사람
+     * @Param pageable 페이징 정보
      */
     @Transactional(readOnly = true)
     public List<FriendRequest> findRequests(Pageable pageable, Member recipient) {
@@ -63,25 +66,37 @@ public class FriendService {
                 .findFriendRequestByRecipientOrderByCreatedAtDesc(recipient, pageable);
     }
 
+    /**
+     * @param friendRequestId 친구요청 아이디
+     * @return 친구 정보
+     */
     @Transactional
     public Friend acceptFriendRequest(final long friendRequestId) {
-        FriendRequest friendRequest = friendRequestRepository.findById(friendRequestId)
-                .orElseThrow(() -> new PayException(ErrorCode.BAD_REQUEST));
-
+        FriendRequest friendRequest = findFriendRequest(friendRequestId);
         Friend savedFriend = friendRepository.save(Friend.from(friendRequest));
         friendRequestRepository.deleteById(friendRequestId);
-
         return savedFriend;
     }
 
+    /**
+     * @param friendRequestId 친구요청 아이디
+     * @return 친구 요청 정보
+     */
     @Transactional
     public FriendRequest denyFriendRequest(final long friendRequestId) {
-        FriendRequest friendRequest = friendRequestRepository.findById(friendRequestId)
-                .orElseThrow(() -> new PayException(ErrorCode.BAD_REQUEST));
-
+        FriendRequest friendRequest = findFriendRequest(friendRequestId);
         friendRequestRepository.deleteById(friendRequestId);
-
         return friendRequest;
+    }
+
+    private FriendRequest findFriendRequest(long friendRequestId) {
+        return friendRequestRepository.findById(friendRequestId)
+                .orElseThrow(() -> new PayException(ErrorCode.BAD_REQUEST));
+    }
+
+    private Member findMember(String email) {
+        return memberRepository.findById(email)
+                .orElseThrow(() -> new PayException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
     private void validationFriendRequest(FriendRequest request) {

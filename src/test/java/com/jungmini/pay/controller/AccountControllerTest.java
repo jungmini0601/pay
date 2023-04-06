@@ -6,11 +6,9 @@ import com.jungmini.pay.controller.dto.AccountDTO;
 import com.jungmini.pay.domain.Account;
 import com.jungmini.pay.domain.FriendRequest;
 import com.jungmini.pay.domain.Member;
+import com.jungmini.pay.domain.Transaction;
 import com.jungmini.pay.domain.type.AccountStatus;
-import com.jungmini.pay.fixture.AccountFactory;
-import com.jungmini.pay.fixture.FriendFactory;
-import com.jungmini.pay.fixture.FriendRequestFactory;
-import com.jungmini.pay.fixture.MemberFactory;
+import com.jungmini.pay.fixture.*;
 import com.jungmini.pay.service.AccountService;
 import com.jungmini.pay.service.FriendService;
 import com.jungmini.pay.service.MemberService;
@@ -57,12 +55,14 @@ public class AccountControllerTest {
     @Test
     void create_first_account_success() throws Exception {
         Member member = MemberFactory.member();
+        // 회원가입
         memberService.signUp(member);
+        // 로그인
         String token = tokenService.generateToken(member.getEmail());
-
+        // 계좌 생성
         mvc.perform(
-                        post("/accounts")
-                                .header("Auth", token))
+                post("/accounts")
+                    .header("Auth", token))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.accountNumber").value(Account.DEFAULT_ACCOUNT_NUMBER))
                 .andExpect(jsonPath("$.accountStatus").value(AccountStatus.IN_USE.toString()))
@@ -73,15 +73,17 @@ public class AccountControllerTest {
     @Test
     void create_second_account_success() throws Exception {
         Member member = MemberFactory.member();
+        // 회원가입
         memberService.signUp(member);
+        // 계좌 생성
         accountService.createAccount(member);
+        // 로그인
         String token = tokenService.generateToken(member.getEmail());
-
+        // 계좌 생성 요청
         Account secondAccount = AccountFactory.secondAccount();
-
         mvc.perform(
-                        post("/accounts")
-                                .header("Auth", token))
+                post("/accounts")
+                    .header("Auth", token))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.accountNumber").value(secondAccount.getAccountNumber()))
                 .andExpect(jsonPath("$.accountStatus").value(AccountStatus.IN_USE.toString()))
@@ -92,18 +94,18 @@ public class AccountControllerTest {
     @Test
     void create_account_fail_exceed_max_account() throws Exception {
         Member member = MemberFactory.member();
-
+        // 회원가입
         memberService.signUp(member);
-
+        // 계좌를 최대 사이즈 만큼 생성
         for (int i = 0; i < Account.MAX_ACCOUNT_SIZE; i++) {
             accountService.createAccount(member);
         }
-
+        // 로그인
         String token = tokenService.generateToken(member.getEmail());
-
+        // 추가 계좌 개설 요청
         mvc.perform(
-                        post("/accounts")
-                                .header("Auth", token))
+                 post("/accounts")
+                    .header("Auth", token))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.errorCode").value(ErrorCode.ACCOUNT_SIZE_EXCEED.toString()))
                 .andExpect(jsonPath("$.message").value(ErrorCode.ACCOUNT_SIZE_EXCEED.getDescription()))
@@ -114,7 +116,7 @@ public class AccountControllerTest {
     @Test
     void create_account_fail_without_token() throws Exception {
         mvc.perform(
-                        post("/accounts"))
+                 post("/accounts"))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.errorCode").value(ErrorCode.UN_AUTHORIZED.toString()))
                 .andExpect(jsonPath("$.message").value(ErrorCode.UN_AUTHORIZED.getDescription()))
@@ -125,21 +127,24 @@ public class AccountControllerTest {
     @Test
     void charge_point_success_amount_10000() throws Exception {
         Member owner = MemberFactory.member();
-        memberService.signUp(owner);
-        Account account = accountService.createAccount(owner);
         int amount = 10000;
+        // 회원가입
+        memberService.signUp(owner);
+        // 계좌 생성
+        Account account = accountService.createAccount(owner);
+        // 로그인
         String token = tokenService.generateToken(owner.getEmail());
-
+        // 포인트 충전 요청
         AccountDTO.ChargePointRequest request = AccountDTO.ChargePointRequest.builder()
                 .amount(amount)
                 .accountNumber(account.getAccountNumber())
                 .build();
 
         mvc.perform(
-                        post("/accounts/points")
-                                .header("Auth", token)
-                                .content(objectMapper.writeValueAsString(request))
-                                .contentType(MediaType.APPLICATION_JSON))
+                post("/accounts/points")
+                    .header("Auth", token)
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.balance").value(amount))
                 .andExpect(jsonPath("$.accountNumber").value(account.getAccountNumber()))
@@ -151,21 +156,24 @@ public class AccountControllerTest {
     @Test
     void charge_point_success_amount_2000000() throws Exception {
         Member owner = MemberFactory.member();
-        memberService.signUp(owner);
-        Account account = accountService.createAccount(owner);
         int amount = 2000000;
+        // 회원가입
+        memberService.signUp(owner);
+        // 계좌 생성
+        Account account = accountService.createAccount(owner);
+        // 로그인
         String token = tokenService.generateToken(owner.getEmail());
-
+        // 포인트 충전 요청
         AccountDTO.ChargePointRequest request = AccountDTO.ChargePointRequest.builder()
                 .amount(amount)
                 .accountNumber(account.getAccountNumber())
                 .build();
 
         mvc.perform(
-                        post("/accounts/points")
-                                .header("Auth", token)
-                                .content(objectMapper.writeValueAsString(request))
-                                .contentType(MediaType.APPLICATION_JSON))
+                post("/accounts/points")
+                    .header("Auth", token)
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.balance").value(amount))
                 .andExpect(jsonPath("$.accountNumber").value(account.getAccountNumber()))
@@ -177,21 +185,24 @@ public class AccountControllerTest {
     @Test
     void charge_point_fail_less_than_10000() throws Exception{
         Member owner = MemberFactory.member();
-        memberService.signUp(owner);
-        Account account = accountService.createAccount(owner);
         int amount = 999;
+        // 회원가입
+        memberService.signUp(owner);
+        // 계좌 생성
+        Account account = accountService.createAccount(owner);
+        // 토큰 생성
         String token = tokenService.generateToken(owner.getEmail());
-
+        // 포인트 충전 요청
         AccountDTO.ChargePointRequest request = AccountDTO.ChargePointRequest.builder()
                 .amount(amount)
                 .accountNumber(account.getAccountNumber())
                 .build();
 
         mvc.perform(
-                        post("/accounts/points")
-                                .header("Auth", token)
-                                .content(objectMapper.writeValueAsString(request))
-                                .contentType(MediaType.APPLICATION_JSON))
+                post("/accounts/points")
+                    .header("Auth", token)
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.errorCode").exists())
                 .andExpect(jsonPath("$.errorFields").exists())
@@ -202,21 +213,24 @@ public class AccountControllerTest {
     @Test
     void charge_point_fail_greater_than_2000000() throws Exception{
         Member owner = MemberFactory.member();
-        memberService.signUp(owner);
-        Account account = accountService.createAccount(owner);
         int amount = 20000000;
+        // 회원가입
+        memberService.signUp(owner);
+        // 계좌 생성
+        Account account = accountService.createAccount(owner);
+        // 로그인
         String token = tokenService.generateToken(owner.getEmail());
-
+        // 포인트 충전 요청
         AccountDTO.ChargePointRequest request = AccountDTO.ChargePointRequest.builder()
                 .amount(amount)
                 .accountNumber(account.getAccountNumber())
                 .build();
 
         mvc.perform(
-                        post("/accounts/points")
-                                .header("Auth", token)
-                                .content(objectMapper.writeValueAsString(request))
-                                .contentType(MediaType.APPLICATION_JSON))
+                post("/accounts/points")
+                    .header("Auth", token)
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.errorCode").exists())
                 .andExpect(jsonPath("$.errorFields").exists())
@@ -232,13 +246,13 @@ public class AccountControllerTest {
                 .name("requester")
                 .password("1231242314123")
                 .build();
-
+        int amount = 50000;
+        // 회원가입
         memberService.signUp(owner);
         memberService.signUp(requester);
-
+        // 계좌 생성
         Account account = accountService.createAccount(owner);
-
-        int amount = 50000;
+        // 요청자 로그인
         String token = tokenService.generateToken(requester.getEmail());
 
         AccountDTO.ChargePointRequest request = AccountDTO.ChargePointRequest.builder()
@@ -247,10 +261,10 @@ public class AccountControllerTest {
                 .build();
 
         mvc.perform(
-                        post("/accounts/points")
-                                .header("Auth", token)
-                                .content(objectMapper.writeValueAsString(request))
-                                .contentType(MediaType.APPLICATION_JSON))
+                post("/accounts/points")
+                    .header("Auth", token)
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.errorCode").value(ErrorCode.REQUESTER_IS_NOT_OWNER.toString()))
                 .andExpect(jsonPath("$.message").value(ErrorCode.REQUESTER_IS_NOT_OWNER.getDescription()))
@@ -261,19 +275,21 @@ public class AccountControllerTest {
     @Test
     void charge_point_fail_without_token() throws Exception{
         Member owner = MemberFactory.member();
-        memberService.signUp(owner);
-        Account account = accountService.createAccount(owner);
         int amount = 50000;
-
+        // 회원 가입
+        memberService.signUp(owner);
+        // 계좌 생성
+        Account account = accountService.createAccount(owner);
+        // 충전 요청
         AccountDTO.ChargePointRequest request = AccountDTO.ChargePointRequest.builder()
                 .amount(amount)
                 .accountNumber(account.getAccountNumber())
                 .build();
 
         mvc.perform(
-                        post("/accounts/points")
-                                .content(objectMapper.writeValueAsString(request))
-                                .contentType(MediaType.APPLICATION_JSON))
+                post("/accounts/points")
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.errorCode").value(ErrorCode.UN_AUTHORIZED.toString()))
                 .andExpect(jsonPath("$.message").value(ErrorCode.UN_AUTHORIZED.getDescription()))
@@ -284,17 +300,18 @@ public class AccountControllerTest {
     @Test
     void charge_point_fail_account_number_is_empty() throws Exception{
         Member owner = MemberFactory.member();
-        memberService.signUp(owner);
         int amount = 50000;
+        // 회원 가입
+        memberService.signUp(owner);
 
         AccountDTO.ChargePointRequest request = AccountDTO.ChargePointRequest.builder()
                 .amount(amount)
                 .build();
 
         mvc.perform(
-                        post("/accounts/points")
-                                .content(objectMapper.writeValueAsString(request))
-                                .contentType(MediaType.APPLICATION_JSON))
+                post("/accounts/points")
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.errorCode").value(ErrorCode.BAD_REQUEST.toString()))
                 .andExpect(jsonPath("$.errorFields").exists())
@@ -305,18 +322,19 @@ public class AccountControllerTest {
     @Test
     void charge_point_fail_account_number_length_is_not_12() throws Exception{
         Member owner = MemberFactory.member();
-        memberService.signUp(owner);
         int amount = 50000;
-
+        // 회원 가입
+        memberService.signUp(owner);
+        // 충전 요청
         AccountDTO.ChargePointRequest request = AccountDTO.ChargePointRequest.builder()
                 .amount(amount)
                 .accountNumber("123")
                 .build();
 
         mvc.perform(
-                        post("/accounts/points")
-                                .content(objectMapper.writeValueAsString(request))
-                                .contentType(MediaType.APPLICATION_JSON))
+                post("/accounts/points")
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.errorCode").value(ErrorCode.BAD_REQUEST.toString()))
                 .andExpect(jsonPath("$.errorFields").exists())
@@ -327,9 +345,10 @@ public class AccountControllerTest {
     @Test
     void charge_point_fail_account_number_contains_not_numeric_character() throws Exception{
         Member owner = MemberFactory.member();
-        memberService.signUp(owner);
         int amount = 50000;
-
+        // 회원 가입
+        memberService.signUp(owner);
+        // 충전 요청
         AccountDTO.ChargePointRequest request = AccountDTO.ChargePointRequest.builder()
                 .amount(amount)
                 .accountNumber("123456789rrr")
@@ -349,21 +368,22 @@ public class AccountControllerTest {
     @Test
     void charge_point_fail_account_not_found() throws Exception{
         Member owner = MemberFactory.member();
-        memberService.signUp(owner);
         int amount = 50000;
-
+        // 회원 가입
+        memberService.signUp(owner);
+        // 로그인
         String token = tokenService.generateToken(owner.getEmail());
-
+        // 충전 요청
         AccountDTO.ChargePointRequest request = AccountDTO.ChargePointRequest.builder()
                 .amount(amount)
                 .accountNumber("123456789111")
                 .build();
 
         mvc.perform(
-                        post("/accounts/points")
-                                .header("Auth", token)
-                                .content(objectMapper.writeValueAsString(request))
-                                .contentType(MediaType.APPLICATION_JSON))
+                post("/accounts/points")
+                    .header("Auth", token)
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.errorCode").value(ErrorCode.ACCOUNT_NOT_FOUND.toString()))
                 .andExpect(jsonPath("$.message").value(ErrorCode.ACCOUNT_NOT_FOUND.getDescription()))
@@ -384,7 +404,6 @@ public class AccountControllerTest {
         memberService.signUp(recipient);
         // 로그인
         String remitterToken = tokenService.generateToken(remitter.getEmail());
-        String recipientToken = tokenService.generateToken(remitter.getEmail());
         // 계좌생성
         Account remitterAccount = accountService.createAccount(remitter);
         Account recipientAccount = accountService.createAccount(recipient);
@@ -403,10 +422,10 @@ public class AccountControllerTest {
                 .build();
 
         mvc.perform(
-                        post("/accounts/remit")
-                                .header("Auth", remitterToken)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(remitRequest)))
+                post("/accounts/remit")
+                    .header("Auth", remitterToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(remitRequest)))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.amount").value(amount))
                 .andExpect(jsonPath("$.recipientsAccountNumber").value(recipientAccount.getAccountNumber()))
@@ -429,7 +448,6 @@ public class AccountControllerTest {
         memberService.signUp(recipient);
         // 로그인
         String remitterToken = tokenService.generateToken(remitter.getEmail());
-        String recipientToken = tokenService.generateToken(remitter.getEmail());
         // 계좌생성
         Account remitterAccount = accountService.createAccount(remitter);
         Account recipientAccount = accountService.createAccount(recipient);
@@ -448,10 +466,10 @@ public class AccountControllerTest {
                 .build();
 
         mvc.perform(
-                        post("/accounts/remit")
-                                .header("Auth", remitterToken)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(remitRequest)))
+                post("/accounts/remit")
+                    .header("Auth", remitterToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(remitRequest)))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.errorCode").value(ErrorCode.LACK_OF_BALANCE.toString()))
                 .andExpect(jsonPath("$.message").value(ErrorCode.LACK_OF_BALANCE.getDescription()))
@@ -472,7 +490,6 @@ public class AccountControllerTest {
         memberService.signUp(recipient);
         // 로그인
         String remitterToken = tokenService.generateToken(remitter.getEmail());
-        String recipientToken = tokenService.generateToken(remitter.getEmail());
         // 계좌생성
         Account remitterAccount = accountService.createAccount(remitter);
         Account recipientAccount = accountService.createAccount(recipient);
@@ -487,10 +504,10 @@ public class AccountControllerTest {
                 .build();
 
         mvc.perform(
-                        post("/accounts/remit")
-                                .header("Auth", remitterToken)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(remitRequest)))
+                post("/accounts/remit")
+                    .header("Auth", remitterToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(remitRequest)))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.errorCode").value(ErrorCode.NOT_FRIENDS.toString()))
                 .andExpect(jsonPath("$.message").value(ErrorCode.NOT_FRIENDS.getDescription()))
@@ -523,9 +540,9 @@ public class AccountControllerTest {
                 .build();
 
         mvc.perform(
-                        post("/accounts/remit")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(remitRequest)))
+                post("/accounts/remit")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(remitRequest)))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.errorCode").value(ErrorCode.UN_AUTHORIZED.toString()))
                 .andExpect(jsonPath("$.message").value(ErrorCode.UN_AUTHORIZED.getDescription()))
@@ -541,14 +558,11 @@ public class AccountControllerTest {
         Member remitter = MemberFactory.memberFrom("remitter@test.com", "123465789");
         Member recipient = MemberFactory.memberFrom("recipient@test.com", "123456789");
         Member member = MemberFactory.memberFrom("test@test.com", "123456789");
-
         // 회원가입
         memberService.signUp(remitter);
         memberService.signUp(recipient);
         memberService.signUp(member);
         // 로그인
-        String remitterToken = tokenService.generateToken(remitter.getEmail());
-        String recipientToken = tokenService.generateToken(recipient.getEmail());
         String memberToken = tokenService.generateToken(member.getEmail());
         // 계좌생성
         Account remitterAccount = accountService.createAccount(remitter);
@@ -564,10 +578,10 @@ public class AccountControllerTest {
                 .build();
 
         mvc.perform(
-                        post("/accounts/remit")
-                                .header("Auth", memberToken)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(remitRequest)))
+                post("/accounts/remit")
+                    .header("Auth", memberToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(remitRequest)))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.errorCode").value(ErrorCode.REQUESTER_IS_NOT_OWNER.toString()))
                 .andExpect(jsonPath("$.message").value(ErrorCode.REQUESTER_IS_NOT_OWNER.getDescription()))
@@ -577,8 +591,6 @@ public class AccountControllerTest {
     @DisplayName("통합테스트 송금 실패 - 존재 하지 않는 계좌인 경우")
     @Test
     void remit_fail_account_not_found() throws Exception{
-        int remitterBalance = 10000;
-        int recipientBalance = 100;
         int amount = 500;
         Member remitter = MemberFactory.memberFrom("remitter@test.com", "123465789");
         Member recipient = MemberFactory.memberFrom("recipient@test.com", "123456789");
@@ -587,7 +599,6 @@ public class AccountControllerTest {
         memberService.signUp(recipient);
         // 로그인
         String remitterToken = tokenService.generateToken(remitter.getEmail());
-        String recipientToken = tokenService.generateToken(recipient.getEmail());
         // 송금
         AccountDTO.RemitRequest remitRequest = AccountDTO.RemitRequest.builder()
                 .amount(amount)
@@ -596,10 +607,10 @@ public class AccountControllerTest {
                 .build();
 
         mvc.perform(
-                        post("/accounts/remit")
-                                .header("Auth", remitterToken)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(remitRequest)))
+                post("/accounts/remit")
+                    .header("Auth", remitterToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(remitRequest)))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.errorCode").value(ErrorCode.ACCOUNT_NOT_FOUND.toString()))
                 .andExpect(jsonPath("$.message").value(ErrorCode.ACCOUNT_NOT_FOUND.getDescription()))
@@ -619,7 +630,7 @@ public class AccountControllerTest {
         //계좌조회
         mvc.perform(
                 get("/accounts/" + account.getAccountNumber())
-                        .header("Auth", token))
+                    .header("Auth", token))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.balance").value(account.getBalance()))
                 .andExpect(jsonPath("$.ownerEmail").value(account.getOwner().getEmail()))
@@ -638,7 +649,7 @@ public class AccountControllerTest {
         Account account = accountService.createAccount(member);
         //계좌조회
         mvc.perform(
-                        get("/accounts/" + account.getAccountNumber()))
+                get("/accounts/" + account.getAccountNumber()))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.errorCode").value(ErrorCode.UN_AUTHORIZED.toString()))
                 .andExpect(jsonPath("$.message").value(ErrorCode.UN_AUTHORIZED.getDescription()))
@@ -656,7 +667,6 @@ public class AccountControllerTest {
         //로그인
         String token = tokenService.generateToken(member.getEmail());
         //계좌생성
-        Account account = accountService.createAccount(member);
         Account account2 = accountService.createAccount(member2);
         //계좌조회
         mvc.perform(
@@ -681,6 +691,162 @@ public class AccountControllerTest {
         mvc.perform(
                         get("/accounts/" + invalidAccountNumber)
                                 .header("Auth", token))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.ILLEGAL_ACCOUNT_NUMBER.toString()))
+                .andExpect(jsonPath("$.message").value(ErrorCode.ILLEGAL_ACCOUNT_NUMBER.getDescription()))
+                .andDo(print());
+    }
+
+    @DisplayName("통합테스트 거래 내역 조회 성공")
+    @Test
+    void get_transactions_success() throws Exception {
+        int remitterBalance = 10000;
+        int recipientBalance = 100;
+        int amount = 500;
+        Member remitter = MemberFactory.memberFrom("remitter@test.com", "123465789");
+        Member recipient = MemberFactory.memberFrom("recipient@test.com", "123456789");
+
+        // 회원가입
+        memberService.signUp(remitter);
+        memberService.signUp(recipient);
+        // 로그인
+        String remitterToken = tokenService.generateToken(remitter.getEmail());
+        // 계좌생성
+        Account remitterAccount = accountService.createAccount(remitter);
+        Account recipientAccount = accountService.createAccount(recipient);
+        // 잔액 충전
+        accountService.chargePoint(remitterBalance, remitterAccount, remitter);
+        accountService.chargePoint(recipientBalance, recipientAccount, recipient);
+        // 친구관계 생성
+        FriendRequest friendRequest = FriendRequest.from(remitter, recipient);
+        FriendRequest savedRequest = friendService.requestFriend(friendRequest);
+        friendService.acceptFriendRequest(savedRequest.getId());
+        // 송금
+        Transaction request1 = TransactionFactory.transactionRequest(remitterAccount, recipientAccount, amount);
+        Transaction request2 = TransactionFactory.transactionRequest(remitterAccount, recipientAccount, amount);
+        accountService.remit(request1, remitter);
+        accountService.remit(request2, remitter);
+        // 거래 내역 조회
+        mvc.perform(
+                get(String.format("/accounts/%s/transactions?page=0&size=20", remitterAccount.getAccountNumber()))
+                    .header("Auth", remitterToken))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.[0]").exists())
+                .andExpect(jsonPath("$.[1]").exists())
+                .andDo(print());
+    }
+
+    @DisplayName("통합테스트 거래 내역 조회 실패 - 내 계좌가 아닌 경우")
+    @Test
+    void get_transactions_fail_requeseter_not_onwer() throws Exception {
+        int remitterBalance = 10000;
+        int recipientBalance = 100;
+        int amount = 500;
+        Member remitter = MemberFactory.memberFrom("remitter@test.com", "123465789");
+        Member recipient = MemberFactory.memberFrom("recipient@test.com", "123456789");
+
+        // 회원가입
+        memberService.signUp(remitter);
+        memberService.signUp(recipient);
+        // 로그인
+        String recipientToken = tokenService.generateToken(recipient.getEmail());
+        // 계좌생성
+        Account remitterAccount = accountService.createAccount(remitter);
+        Account recipientAccount = accountService.createAccount(recipient);
+        // 잔액 충전
+        accountService.chargePoint(remitterBalance, remitterAccount, remitter);
+        accountService.chargePoint(recipientBalance, recipientAccount, recipient);
+        // 친구관계 생성
+        FriendRequest friendRequest = FriendRequest.from(remitter, recipient);
+        FriendRequest savedRequest = friendService.requestFriend(friendRequest);
+        friendService.acceptFriendRequest(savedRequest.getId());
+        // 송금
+        Transaction request1 = TransactionFactory.transactionRequest(remitterAccount, recipientAccount, amount);
+        Transaction request2 = TransactionFactory.transactionRequest(remitterAccount, recipientAccount, amount);
+        accountService.remit(request1, remitter);
+        accountService.remit(request2, remitter);
+        // 거래 내역 조회
+        mvc.perform(
+                    get(String.format("/accounts/%s/transactions?page=0&size=20", remitterAccount.getAccountNumber()))
+                        .header("Auth", recipientToken))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.REQUESTER_IS_NOT_OWNER.toString()))
+                .andExpect(jsonPath("$.message").value(ErrorCode.REQUESTER_IS_NOT_OWNER.getDescription()))
+                .andDo(print());
+    }
+
+    @DisplayName("통합테스트 거래 내역 조회 실패 - 계좌 못 찾은 경우")
+    @Test
+    void get_transactions_fail_account_not_found() throws Exception {
+        int remitterBalance = 10000;
+        int recipientBalance = 100;
+        int amount = 500;
+        Member remitter = MemberFactory.memberFrom("remitter@test.com", "123465789");
+        Member recipient = MemberFactory.memberFrom("recipient@test.com", "123456789");
+
+        // 회원가입
+        memberService.signUp(remitter);
+        memberService.signUp(recipient);
+        // 로그인
+        String recipientToken = tokenService.generateToken(recipient.getEmail());
+        // 계좌생성
+        Account remitterAccount = accountService.createAccount(remitter);
+        Account recipientAccount = accountService.createAccount(recipient);
+        // 잔액 충전
+        accountService.chargePoint(remitterBalance, remitterAccount, remitter);
+        accountService.chargePoint(recipientBalance, recipientAccount, recipient);
+        // 친구관계 생성
+        FriendRequest friendRequest = FriendRequest.from(remitter, recipient);
+        FriendRequest savedRequest = friendService.requestFriend(friendRequest);
+        friendService.acceptFriendRequest(savedRequest.getId());
+        // 송금
+        Transaction request1 = TransactionFactory.transactionRequest(remitterAccount, recipientAccount, amount);
+        Transaction request2 = TransactionFactory.transactionRequest(remitterAccount, recipientAccount, amount);
+        accountService.remit(request1, remitter);
+        accountService.remit(request2, remitter);
+        // 거래 내역 조회
+        mvc.perform(
+                get(String.format("/accounts/%s/transactions?page=0&size=20", "100008888888"))
+                    .header("Auth", recipientToken))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.errorCode").value(ErrorCode.ACCOUNT_NOT_FOUND.toString()))
+                .andExpect(jsonPath("$.message").value(ErrorCode.ACCOUNT_NOT_FOUND.getDescription()))
+                .andDo(print());
+    }
+
+    @DisplayName("통합테스트 거래 내역 조회 실패 - 유효 하지 않은 계좌 번호")
+    @Test
+    void get_transactions_fail_illegal_account_number() throws Exception {
+        int remitterBalance = 10000;
+        int recipientBalance = 100;
+        int amount = 500;
+        Member remitter = MemberFactory.memberFrom("remitter@test.com", "123465789");
+        Member recipient = MemberFactory.memberFrom("recipient@test.com", "123456789");
+
+        // 회원가입
+        memberService.signUp(remitter);
+        memberService.signUp(recipient);
+        // 로그인
+        String recipientToken = tokenService.generateToken(recipient.getEmail());
+        // 계좌생성
+        Account remitterAccount = accountService.createAccount(remitter);
+        Account recipientAccount = accountService.createAccount(recipient);
+        // 잔액 충전
+        accountService.chargePoint(remitterBalance, remitterAccount, remitter);
+        accountService.chargePoint(recipientBalance, recipientAccount, recipient);
+        // 친구관계 생성
+        FriendRequest friendRequest = FriendRequest.from(remitter, recipient);
+        FriendRequest savedRequest = friendService.requestFriend(friendRequest);
+        friendService.acceptFriendRequest(savedRequest.getId());
+        // 송금
+        Transaction request1 = TransactionFactory.transactionRequest(remitterAccount, recipientAccount, amount);
+        Transaction request2 = TransactionFactory.transactionRequest(remitterAccount, recipientAccount, amount);
+        accountService.remit(request1, remitter);
+        accountService.remit(request2, remitter);
+        // 거래 내역 조회
+        mvc.perform(
+                get(String.format("/accounts/%s/transactions?page=0&size=20", "10000888888z"))
+                    .header("Auth", recipientToken))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.errorCode").value(ErrorCode.ILLEGAL_ACCOUNT_NUMBER.toString()))
                 .andExpect(jsonPath("$.message").value(ErrorCode.ILLEGAL_ACCOUNT_NUMBER.getDescription()))

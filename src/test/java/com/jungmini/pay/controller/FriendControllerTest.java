@@ -43,7 +43,7 @@ public class FriendControllerTest {
     private MemberService memberService;
 
     @Autowired
-    private TokenService tokenService;
+    private  TokenService tokenService;
 
     @Autowired
     private FriendService friendService;
@@ -57,15 +57,17 @@ public class FriendControllerTest {
         FriendRequest friendRequest = FriendRequestFactory.friendRequest();
         Member requester = friendRequest.getRequester();
         Member recipient = friendRequest.getRecipient();
+        // 회원가입
         memberService.signUp(requester);
         memberService.signUp(recipient);
+        // 로그인
         String token = tokenService.generateToken(friendRequest.getRequester().getEmail());
-
+        // 친구 요청
         mvc.perform(
-                        post("/friends/request")
-                                .header("Auth", token)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(friendRequest.getRecipient().getEmail())))
+                post("/friends/request")
+                    .header("Auth", token)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(friendRequest.getRecipient().getEmail())))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath("$.message").exists())
                 .andDo(print());
@@ -77,9 +79,9 @@ public class FriendControllerTest {
         FriendRequest friendRequest = FriendRequestFactory.friendRequest();
 
         mvc.perform(
-                        post("/friends/request")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(friendRequest.getRecipient().getEmail())))
+                post("/friends/request")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(friendRequest.getRecipient().getEmail())))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.errorCode").value(ErrorCode.UN_AUTHORIZED.toString()))
                 .andExpect(jsonPath("$.message").value(ErrorCode.UN_AUTHORIZED.getDescription()))
@@ -92,16 +94,19 @@ public class FriendControllerTest {
         FriendRequest friendRequest = FriendRequestFactory.friendRequest();
         Member requester = friendRequest.getRequester();
         Member recipient = friendRequest.getRecipient();
+        // 회원 가입
         memberService.signUp(requester);
         memberService.signUp(recipient);
+        // 친구 요청
         friendService.requestFriend(friendRequest);
+        // 로그인
         String token = tokenService.generateToken(friendRequest.getRequester().getEmail());
 
         mvc.perform(
-                        post("/friends/request")
-                                .header("Auth", token)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(friendRequest.getRecipient().getEmail())))
+                post("/friends/request")
+                    .header("Auth", token)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(friendRequest.getRecipient().getEmail())))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.errorCode").value(ErrorCode.FRIENDS_REQUEST_EXISTS.toString()))
                 .andExpect(jsonPath("$.message").value(ErrorCode.FRIENDS_REQUEST_EXISTS.getDescription()))
@@ -114,9 +119,12 @@ public class FriendControllerTest {
         Friend friend = FriendFactory.friend();
         Member requester = friend.getRequester();
         Member recipient = friend.getRecipient();
+        // 회원 가입
         memberService.signUp(requester);
         memberService.signUp(recipient);
+        // 친구 미리 만들기
         friendRepository.save(friend);
+        // 로그인
         String token = tokenService.generateToken(requester.getEmail());
 
         mvc.perform(
@@ -136,16 +144,19 @@ public class FriendControllerTest {
         Friend friend = FriendFactory.friendReverseDirection();
         Member requester = friend.getRequester();
         Member recipient = friend.getRecipient();
+        // 회원 가입
         memberService.signUp(requester);
         memberService.signUp(recipient);
+        // 미리 친구 만들기
         friendRepository.save(friend);
+        // 로그인
         String token = tokenService.generateToken(requester.getEmail());
 
         mvc.perform(
-                        post("/friends/request")
-                                .header("Auth", token)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(recipient.getEmail())))
+                post("/friends/request")
+                    .header("Auth", token)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(recipient.getEmail())))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.errorCode").value(ErrorCode.ALREADY_FRIENDS.toString()))
                 .andExpect(jsonPath("$.message").value(ErrorCode.ALREADY_FRIENDS.getDescription()))
@@ -157,14 +168,16 @@ public class FriendControllerTest {
     void create_friend_request_bad_request() throws Exception {
         Member member = MemberFactory.member();
         FriendDTO.CreateFriendRequest request = FriendDTO.CreateFriendRequest.builder().build();
+        // 회원가입
         memberService.signUp(member);
+        // 로그인
         String token = tokenService.generateToken(member.getEmail());
 
         mvc.perform(
-                        post("/friends/request")
-                                .header("Auth", token)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(request)))
+                post("/friends/request")
+                    .header("Auth", token)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().is4xxClientError())
                 .andExpect(jsonPath("$.errorCode").value(ErrorCode.BAD_REQUEST.toString()))
                 .andExpect(jsonPath("$.errorFields").exists())
@@ -177,14 +190,17 @@ public class FriendControllerTest {
         FriendRequest friendRequest = FriendRequestFactory.friendRequest();
         Member requester = friendRequest.getRequester();
         Member recipient = friendRequest.getRecipient();
+        // 회원 가입
         memberService.signUp(requester);
         memberService.signUp(recipient);
+        // 친구 요청 보내기
         friendService.requestFriend(friendRequest);
+        // 로그인
         String token = tokenService.generateToken(friendRequest.getRecipient().getEmail());
 
         mvc.perform(
-                        get("/friends/request")
-                                .header("Auth", token))
+                get("/friends/request")
+                    .header("Auth", token))
                 .andExpect(status().is2xxSuccessful())
                 .andDo(print());
     }
@@ -195,10 +211,12 @@ public class FriendControllerTest {
         FriendRequest friendRequest = FriendRequestFactory.friendRequest();
         Member requester = friendRequest.getRequester();
         Member recipient = friendRequest.getRecipient();
+        // 회원 가입
         memberService.signUp(requester);
         memberService.signUp(recipient);
+        // 친구 요청 보내기
         FriendRequest createdRequest = friendService.requestFriend(friendRequest);
-
+        // 로그인
         String token = tokenService.generateToken(recipient.getEmail());
 
         mvc.perform(post("/friends/requests/accept/" + createdRequest.getId())
@@ -224,10 +242,12 @@ public class FriendControllerTest {
         FriendRequest friendRequest = FriendRequestFactory.friendRequest();
         Member requester = friendRequest.getRequester();
         Member recipient = friendRequest.getRecipient();
+        // 회원 가입
         memberService.signUp(requester);
         memberService.signUp(recipient);
+        // 친구 요청
         FriendRequest createdRequest = friendService.requestFriend(friendRequest);
-
+        // 로그인
         String token = tokenService.generateToken(recipient.getEmail());
 
         mvc.perform(post("/friends/requests/deny/" + createdRequest.getId())

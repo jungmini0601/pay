@@ -29,7 +29,7 @@ class MemberServiceTest {
     private MemberRepository memberRepository;
 
     @Mock
-    private TokenService tokenService;
+    private TokenServiceImpl tokenServiceImpl;
 
     @InjectMocks
     private MemberService memberService;
@@ -74,7 +74,7 @@ class MemberServiceTest {
         Member member = MemberFactory.member();
         given(memberRepository.findById(any())).willReturn(Optional.of(member));
         given(passwordEncoder.verify(any(), any())).willReturn(true);
-        given(tokenService.generateToken(any())).willReturn("token");
+        given(tokenServiceImpl.generateToken(any())).willReturn("token");
 
         String token = memberService.signin(member);
         assertThat(token).isEqualTo("token");
