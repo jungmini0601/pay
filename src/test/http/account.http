@@ -1,21 +1,21 @@
 ### 계좌 생성
 POST http://localhost:8080/accounts
-Auth: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZXhwIjoxNjgwMzUxMjUwfQ.VznCLWRPLsC-dxuMfi3aXtkv-5c-hZzFE_AsZlWTdgFsJnC4wyuUIAbIyh8Pd8QxFgfA7uRdngBFEkERTP1Yiw
+Auth: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZXhwIjoxNjgwNzQ5OTE5fQ.hZq04buiy0b_adrv4VISn0yP017Obg8EnXfnWoC2iQT-5KMaeqEXSf5W7H0mLABDbbc2FnBbDSaMU9p0v1lScw
 Content-Type: application/json
 
 ### 포인트 충전
 POST http://localhost:8080/accounts/points
-Auth: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZXhwIjoxNjgwMzUxMjUwfQ.VznCLWRPLsC-dxuMfi3aXtkv-5c-hZzFE_AsZlWTdgFsJnC4wyuUIAbIyh8Pd8QxFgfA7uRdngBFEkERTP1Yiw
+Auth: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZXhwIjoxNjgwNzQ5OTE5fQ.hZq04buiy0b_adrv4VISn0yP017Obg8EnXfnWoC2iQT-5KMaeqEXSf5W7H0mLABDbbc2FnBbDSaMU9p0v1lScw
 Content-Type: application/json
 
 {
-  "amount": 10000,
+  "amount": 200000,
   "accountNumber": "100000000000"
 }
 
-### 포인트 충전
+### 송금
 POST http://localhost:8080/accounts/remit
-Auth: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZXhwIjoxNjgwMzUxMjUwfQ.VznCLWRPLsC-dxuMfi3aXtkv-5c-hZzFE_AsZlWTdgFsJnC4wyuUIAbIyh8Pd8QxFgfA7uRdngBFEkERTP1Yiw
+Auth: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZXhwIjoxNjgwNzQ5OTE5fQ.hZq04buiy0b_adrv4VISn0yP017Obg8EnXfnWoC2iQT-5KMaeqEXSf5W7H0mLABDbbc2FnBbDSaMU9p0v1lScw
 Content-Type: application/json
 
 {
@@ -23,3 +23,7 @@ Content-Type: application/json
   "recipientsAccountNumber":"100000000001",
   "remitterAccountNumber":"100000000000"
 }
+
+### 거래 내역 조회
+GET http://localhost:8080/accounts/100000000000/transactions?page=0
+Auth: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuY29tIiwiZXhwIjoxNjgwNzQ2OTQ3fQ.3X9RQj5IfmMSyLgjYth30URMYNdQtlUkxj_rRKmeobX_jpoRR8c9pRJKtBQw4NfeXseJt_ZfOUGX5eIKhGLPHQ

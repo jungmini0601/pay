@@ -9,9 +9,12 @@ import com.jungmini.pay.service.AccountService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -62,5 +65,19 @@ public class AccountController {
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(AccountDTO.GetAccountResponse.from(account));
+    }
+
+    @GetMapping("/accounts/{accountNumber}/transactions")
+    public ResponseEntity<List<AccountDTO.GetTransactionResponse>> getTransactions(
+            @PathVariable String accountNumber,
+            @SigninMember Member member,
+            Pageable pageable) {
+        Account.validateAccountNumber(accountNumber);
+        List<Transaction> transactions = accountService.getTransactions(accountNumber, member, pageable);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(transactions.stream()
+                        .map(AccountDTO.GetTransactionResponse::from)
+                        .toList());
     }
 }

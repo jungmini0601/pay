@@ -20,7 +20,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.jungmini.pay.domain.Account.MAX_ACCOUNT_SIZE;
@@ -251,6 +253,54 @@ class AccountServiceTest {
 
         PayException payException = assertThrows(PayException.class,
                 () -> accountService.getAccountInfo(account.getAccountNumber(), member));
+
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.REQUESTER_IS_NOT_OWNER.toString());
+        assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.REQUESTER_IS_NOT_OWNER.getDescription());
+    }
+
+    @Test
+    @DisplayName("거래 내역 리스트 조회 성공")
+    void get_transactions_success() {
+        Account account = AccountFactory.account();
+        Member owner = account.getOwner();
+
+        when(accountRepository.findById(any()))
+                .thenReturn(Optional.of(account));
+        when(transactionRepository.findAllByRecipientAccountOrRemitterAccountAndTransactionResultTypeOrderByCreatedAtDesc(any(), any(), any(), any()))
+                .thenReturn(List.of(TransactionFactory.from(), TransactionFactory.from()));
+
+        List<Transaction> transactions = accountService.getTransactions(account.getAccountNumber(), owner, any());
+
+        assertThat(transactions.size()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("거래 내역 리스트 실패 - 계좌를 못 찾은 경우")
+    void get_transactions_fail_account_not_found() {
+        Account account = AccountFactory.account();
+        Member notOwner = MemberFactory.memberFrom("notOwner@test.com");
+
+        when(accountRepository.findById(any()))
+                .thenReturn(Optional.empty());
+
+        PayException payException = assertThrows(PayException.class,
+                () -> accountService.getTransactions(account.getAccountNumber(), notOwner, any()));
+
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.ACCOUNT_NOT_FOUND.toString());
+        assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.ACCOUNT_NOT_FOUND.getDescription());
+    }
+
+    @Test
+    @DisplayName("거래 내역 리스트 실패 - 계좌 소유주 아닌 경우")
+    void get_transactions_fail_requester_not_owner() {
+        Account account = AccountFactory.account();
+        Member notOwner = MemberFactory.memberFrom("notOwner@test.com");
+
+        when(accountRepository.findById(any()))
+                .thenReturn(Optional.of(account));
+
+        PayException payException = assertThrows(PayException.class,
+                () -> accountService.getTransactions(account.getAccountNumber(), notOwner, any()));
 
         assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.REQUESTER_IS_NOT_OWNER.toString());
         assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.REQUESTER_IS_NOT_OWNER.getDescription());
