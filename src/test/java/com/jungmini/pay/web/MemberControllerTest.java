@@ -1,4 +1,4 @@
-package com.jungmini.pay.controller;
+package com.jungmini.pay.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jungmini.pay.domain.Member;

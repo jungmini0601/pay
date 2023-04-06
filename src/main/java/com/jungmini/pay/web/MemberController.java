@@ -1,8 +1,8 @@
-package com.jungmini.pay.controller;
+package com.jungmini.pay.web;
 
 import com.jungmini.pay.domain.Member;
 
-import com.jungmini.pay.controller.dto.MemberDTO;
+import com.jungmini.pay.web.dto.MemberDTO;
 import com.jungmini.pay.service.MemberService;
 
 import jakarta.validation.Valid;

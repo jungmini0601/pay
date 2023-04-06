@@ -1,8 +1,8 @@
-package com.jungmini.pay.controller;
+package com.jungmini.pay.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jungmini.pay.common.exception.ErrorCode;
-import com.jungmini.pay.controller.dto.AccountDTO;
+import com.jungmini.pay.web.dto.AccountDTO;
 import com.jungmini.pay.domain.Account;
 import com.jungmini.pay.domain.FriendRequest;
 import com.jungmini.pay.domain.Member;

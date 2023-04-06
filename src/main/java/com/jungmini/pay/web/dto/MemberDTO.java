@@ -1,4 +1,4 @@
-package com.jungmini.pay.controller.dto;
+package com.jungmini.pay.web.dto;
 
 import com.jungmini.pay.domain.Member;
 

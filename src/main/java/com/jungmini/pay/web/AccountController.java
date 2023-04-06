@@ -1,11 +1,11 @@
-package com.jungmini.pay.controller;
+package com.jungmini.pay.web;
 
 import com.jungmini.pay.domain.Account;
 import com.jungmini.pay.domain.Member;
 import com.jungmini.pay.domain.Transaction;
 
 import com.jungmini.pay.common.resolover.SigninMember;
-import com.jungmini.pay.controller.dto.AccountDTO;
+import com.jungmini.pay.web.dto.AccountDTO;
 import com.jungmini.pay.service.AccountService;
 
 import jakarta.validation.Valid;

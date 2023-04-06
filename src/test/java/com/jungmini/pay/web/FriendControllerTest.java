@@ -1,7 +1,7 @@
-package com.jungmini.pay.controller;
+package com.jungmini.pay.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jungmini.pay.controller.dto.FriendDTO;
+import com.jungmini.pay.web.dto.FriendDTO;
 import com.jungmini.pay.domain.Friend;
 import com.jungmini.pay.domain.FriendRequest;
 import com.jungmini.pay.domain.Member;
