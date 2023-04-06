@@ -1,10 +1,11 @@
 package com.jungmini.pay.controller;
 
-import com.jungmini.pay.common.resolover.SigninMember;
-import com.jungmini.pay.controller.dto.AccountDTO;
 import com.jungmini.pay.domain.Account;
 import com.jungmini.pay.domain.Member;
 import com.jungmini.pay.domain.Transaction;
+
+import com.jungmini.pay.common.resolover.SigninMember;
+import com.jungmini.pay.controller.dto.AccountDTO;
 import com.jungmini.pay.service.AccountService;
 
 import jakarta.validation.Valid;
@@ -60,6 +61,7 @@ public class AccountController {
             @PathVariable String accountNumber,
             @SigninMember Member member
     ) {
+
         Account.validateAccountNumber(accountNumber);
         Account account = accountService.getAccountInfo(accountNumber, member);
 
@@ -72,6 +74,7 @@ public class AccountController {
             @PathVariable String accountNumber,
             @SigninMember Member member,
             Pageable pageable) {
+
         Account.validateAccountNumber(accountNumber);
         List<Transaction> transactions = accountService.getTransactions(accountNumber, member, pageable);
 

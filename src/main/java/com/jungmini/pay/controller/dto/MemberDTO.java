@@ -1,6 +1,7 @@
 package com.jungmini.pay.controller.dto;
 
 import com.jungmini.pay.domain.Member;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

@@ -1,8 +1,10 @@
 package com.jungmini.pay.controller;
 
-import com.jungmini.pay.controller.dto.MemberDTO;
 import com.jungmini.pay.domain.Member;
+
+import com.jungmini.pay.controller.dto.MemberDTO;
 import com.jungmini.pay.service.MemberService;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,7 @@ public class MemberController {
             @RequestBody @Valid MemberDTO.CreateMemberRequest request) {
 
         Member member = memberService.signUp(request.toEntity());
+
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(MemberDTO.CreateMemberResponse.from(member));
     }
@@ -29,7 +32,9 @@ public class MemberController {
     @PostMapping("/members/signin")
     public ResponseEntity<Void> signin(
             @RequestBody @Valid MemberDTO.SigninMemberRequest request) {
+
         String token = memberService.signin(request.toEntity());
+
         return ResponseEntity.status(HttpStatus.OK)
                 .header("Auth", token).build();
     }
