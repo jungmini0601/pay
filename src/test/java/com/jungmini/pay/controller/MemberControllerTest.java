@@ -67,6 +67,7 @@ class MemberControllerTest {
     @Test
     void signup_success_duplicated_member() throws Exception {
         Member member = MemberFactory.member();
+        // 회원 가입
         memberService.signUp(member);
 
         mvc.perform(
@@ -83,6 +84,7 @@ class MemberControllerTest {
     @Test
     void  signin_success() throws Exception {
         Member member = MemberFactory.member();
+        // 회원 가입
         memberService.signUp(member);
 
         mvc.perform(
@@ -98,6 +100,7 @@ class MemberControllerTest {
     @Test
     void  signin_fail_password_mismatch() throws Exception {
         Member member = MemberFactory.member();
+        // 회원 가입
         memberService.signUp(member);
 
         Member memberRequest = Member.builder()

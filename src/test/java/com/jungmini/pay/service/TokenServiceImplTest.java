@@ -10,17 +10,17 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class TokenServiceTest {
+class TokenServiceImplTest {
 
     private JwtProperties jwtProperties = new JwtProperties("asdjkfhasdjlfhasdjklfhklsdjfhlaskdjfahlsdjfh", 10000000);
-    private TokenService tokenService =
-            new TokenService(jwtProperties);
+    private TokenServiceImpl tokenServiceImpl =
+            new TokenServiceImpl(jwtProperties);
 
     @Test
     @DisplayName("토큰 생성 테스트 성공")
     void generate_token() {
         String email = MemberFactory.member().getEmail();
-        String token = tokenService.generateToken(email);
+        String token = tokenServiceImpl.generateToken(email);
 
         assertThat(token).isNotBlank();
         assertThat(token).isNotNull();
@@ -31,9 +31,9 @@ class TokenServiceTest {
     @DisplayName("토큰 검증 테스트 성공")
     void verify_token_success() {
         String email = MemberFactory.member().getEmail();
-        String token = tokenService.generateToken(email);
+        String token = tokenServiceImpl.generateToken(email);
 
-        String parsedEmail = tokenService.verifyToken(token);
+        String parsedEmail = tokenServiceImpl.verifyToken(token);
         assertThat(email).isEqualTo(parsedEmail);
     }
 
@@ -41,10 +41,10 @@ class TokenServiceTest {
     @DisplayName("토큰 검증 실패 테스트 - 토큰 변조된 경우")
     void verify_token_fail() {
         String email = MemberFactory.member().getEmail();
-        String token = tokenService.generateToken(email);
+        String token = tokenServiceImpl.generateToken(email);
 
         PayException exception = Assertions.assertThrows(PayException.class, () -> {
-            tokenService.verifyToken(token + "abcd");
+            tokenServiceImpl.verifyToken(token + "abcd");
         });
 
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.TOKEN_INVALID.toString());
@@ -54,15 +54,15 @@ class TokenServiceTest {
     @DisplayName("토큰 검증 실패 테스트 - 토큰 유효기간 지난 경우")
     void verify_token_fail_timeout() throws Exception {
         jwtProperties = new JwtProperties("asdjkfhasdjlfhasdjklfhklsdjfhlaskdjfahlsdjfh", 1);
-        tokenService = new TokenService(jwtProperties);
+        tokenServiceImpl = new TokenServiceImpl(jwtProperties);
 
         String email = MemberFactory.member().getEmail();
-        String token = tokenService.generateToken(email);
+        String token = tokenServiceImpl.generateToken(email);
 
         Thread.sleep(1000L);
 
         PayException exception = Assertions.assertThrows(PayException.class, () -> {
-            tokenService.verifyToken(token);
+            tokenServiceImpl.verifyToken(token);
         });
 
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.TOKEN_EXPIRED.toString());

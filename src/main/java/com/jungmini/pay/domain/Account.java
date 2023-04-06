@@ -42,6 +42,11 @@ public class Account extends BaseTimeEntity implements AccountNumber {
         return newAccount;
     }
 
+    /**
+     *
+     * @param amount 송금액
+     * @param requester 송금 요청자
+     */
     public void chargePoint(int amount, Member requester) {
         if (!this.owner.equals(requester)) {
             throw new PayException(ErrorCode.REQUESTER_IS_NOT_OWNER);

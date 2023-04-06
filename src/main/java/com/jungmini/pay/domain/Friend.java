@@ -9,6 +9,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Friend extends BaseTimeEntity {
+
     @Id
     @Column(name = "friend_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

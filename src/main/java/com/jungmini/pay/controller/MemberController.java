@@ -22,6 +22,7 @@ public class MemberController {
             @RequestBody @Valid MemberDTO.CreateMemberRequest request) {
 
         Member member = memberService.signUp(request.toEntity());
+
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(MemberDTO.CreateMemberResponse.from(member));
     }
@@ -29,7 +30,9 @@ public class MemberController {
     @PostMapping("/members/signin")
     public ResponseEntity<Void> signin(
             @RequestBody @Valid MemberDTO.SigninMemberRequest request) {
+
         String token = memberService.signin(request.toEntity());
+
         return ResponseEntity.status(HttpStatus.OK)
                 .header("Auth", token).build();
     }

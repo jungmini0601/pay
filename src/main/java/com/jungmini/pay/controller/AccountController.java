@@ -60,6 +60,7 @@ public class AccountController {
             @PathVariable String accountNumber,
             @SigninMember Member member
     ) {
+
         Account.validateAccountNumber(accountNumber);
         Account account = accountService.getAccountInfo(accountNumber, member);
 
@@ -72,6 +73,7 @@ public class AccountController {
             @PathVariable String accountNumber,
             @SigninMember Member member,
             Pageable pageable) {
+
         Account.validateAccountNumber(accountNumber);
         List<Transaction> transactions = accountService.getTransactions(accountNumber, member, pageable);
 
