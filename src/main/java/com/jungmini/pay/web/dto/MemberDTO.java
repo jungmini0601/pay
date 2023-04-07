@@ -49,9 +49,7 @@ public class MemberDTO {
     public static class CreateMemberResponse {
 
         private String email;
-
         private String name;
-
         private LocalDateTime createdAt;
 
         public static CreateMemberResponse from(Member member) {
@@ -68,6 +66,7 @@ public class MemberDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class SigninMemberRequest {
+
         @Email(message = "이메일 형식으로 입력 해주세요")
         @NotBlank(message = "이름은 필수 입력 값입니다.")
         @Size(min = 3, max = 255, message = "이메일은 3~255자리 문자열 입니다.")

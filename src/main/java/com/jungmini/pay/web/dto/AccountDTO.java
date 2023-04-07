@@ -150,9 +150,9 @@ public class AccountDTO {
     public static class GetTransactionResponse {
 
         private long id;
+        private int amount;
         private String transactionType;
         private String transactionResultType;
-        private int amount;
         private String recipientAccountNumber;
         private String remitterAccountNumber;
 
