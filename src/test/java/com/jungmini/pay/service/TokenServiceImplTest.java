@@ -47,7 +47,7 @@ class TokenServiceImplTest {
             tokenServiceImpl.verifyToken(token + "abcd");
         });
 
-        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.TOKEN_INVALID.toString());
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.TOKEN_INVALID);
     }
 
     @Test
@@ -65,6 +65,6 @@ class TokenServiceImplTest {
             tokenServiceImpl.verifyToken(token);
         });
 
-        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.TOKEN_EXPIRED.toString());
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.TOKEN_EXPIRED);
     }
 }

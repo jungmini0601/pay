@@ -67,7 +67,7 @@ class AccountTest {
         PayException payException = assertThrows(PayException.class,
                 () -> account.chargePoint(amount, requester));
 
-        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.REQUESTER_IS_NOT_OWNER.toString());
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.REQUESTER_IS_NOT_OWNER);
         assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.REQUESTER_IS_NOT_OWNER.getDescription());
     }
 }

@@ -81,7 +81,7 @@ class AccountServiceTest {
             accountService.createAccount(owner);
         });
 
-        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.ACCOUNT_SIZE_EXCEED.toString());
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.ACCOUNT_SIZE_EXCEED);
         assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.ACCOUNT_SIZE_EXCEED.getDescription());
     }
 
@@ -114,7 +114,7 @@ class AccountServiceTest {
             accountService.chargePoint(amount, account, owner);
         });
 
-        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.ACCOUNT_NOT_FOUND.toString());
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.ACCOUNT_NOT_FOUND);
         assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.ACCOUNT_NOT_FOUND.getDescription());
     }
 
@@ -179,7 +179,7 @@ class AccountServiceTest {
         PayException payException = assertThrows(PayException.class,
                 () -> accountService.remit(transaction, remitter));
 
-        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.NOT_FRIENDS.toString());
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.NOT_FRIENDS);
         assertThat(transaction.getTransactionResultType()).isEqualTo(TransactionResultType.FAIL);
         assertThat(transaction.getAmount()).isEqualTo(amount);
         assertThat(remitterAccount.getBalance()).isEqualTo(remitterBalance);
@@ -206,7 +206,7 @@ class AccountServiceTest {
         PayException payException = assertThrows(PayException.class,
                 () -> accountService.remit(transaction, remitter));
 
-        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.ACCOUNT_NOT_FOUND.toString());
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.ACCOUNT_NOT_FOUND);
         assertThat(transaction.getTransactionResultType()).isNull();
         assertThat(transaction.getAmount()).isEqualTo(amount);
         assertThat(remitterAccount.getBalance()).isEqualTo(remitterBalance);
@@ -238,7 +238,7 @@ class AccountServiceTest {
         PayException payException = assertThrows(PayException.class,
                 () -> accountService.getAccountInfo(account.getAccountNumber(), owner));
 
-        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.ACCOUNT_NOT_FOUND.toString());
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.ACCOUNT_NOT_FOUND);
         assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.ACCOUNT_NOT_FOUND.getDescription());
     }
 
@@ -254,7 +254,7 @@ class AccountServiceTest {
         PayException payException = assertThrows(PayException.class,
                 () -> accountService.getAccountInfo(account.getAccountNumber(), member));
 
-        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.REQUESTER_IS_NOT_OWNER.toString());
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.REQUESTER_IS_NOT_OWNER);
         assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.REQUESTER_IS_NOT_OWNER.getDescription());
     }
 
@@ -286,7 +286,7 @@ class AccountServiceTest {
         PayException payException = assertThrows(PayException.class,
                 () -> accountService.getTransactions(account.getAccountNumber(), notOwner, any()));
 
-        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.ACCOUNT_NOT_FOUND.toString());
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.ACCOUNT_NOT_FOUND);
         assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.ACCOUNT_NOT_FOUND.getDescription());
     }
 
@@ -302,7 +302,7 @@ class AccountServiceTest {
         PayException payException = assertThrows(PayException.class,
                 () -> accountService.getTransactions(account.getAccountNumber(), notOwner, any()));
 
-        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.REQUESTER_IS_NOT_OWNER.toString());
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.REQUESTER_IS_NOT_OWNER);
         assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.REQUESTER_IS_NOT_OWNER.getDescription());
     }
 }

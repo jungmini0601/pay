@@ -6,6 +6,7 @@ import com.jungmini.pay.domain.Member;
 import com.jungmini.pay.domain.Transaction;
 import com.jungmini.pay.domain.type.TransactionResultType;
 import com.jungmini.pay.domain.type.TransactionType;
+import static com.jungmini.pay.domain.Account.MAX_ACCOUNT_SIZE;
 
 import com.jungmini.pay.common.exception.ErrorCode;
 import com.jungmini.pay.common.exception.PayException;
@@ -19,8 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
-import static com.jungmini.pay.domain.Account.MAX_ACCOUNT_SIZE;
 
 @RequiredArgsConstructor
 @Service
@@ -50,8 +49,7 @@ public class AccountService {
      */
     @Transactional
     public Account chargePoint(int amount, AccountNumber accountNumber, Member requester) {
-        Account account = accountRepository.findById(accountNumber.getAccountNumber())
-                .orElseThrow(() -> new PayException(ErrorCode.ACCOUNT_NOT_FOUND));
+        Account account = findAccount(accountNumber.getAccountNumber());
         account.chargePoint(amount, requester);
         return account;
     }
@@ -105,7 +103,7 @@ public class AccountService {
     }
 
     private void saveFailTransaction(Transaction transactionRequest, PayException e) {
-        if (!e.getErrorCode().equals("ACCOUNT_NOT_FOUND")) { // TODO 시간 없음 나중에 고치기
+        if (!e.getErrorCode().equals(ErrorCode.ACCOUNT_NOT_FOUND)) {
             Account recipientAccount = findAccount(transactionRequest.getRecipientAccount().getAccountNumber());
             Account remitterAccount = findAccount(transactionRequest.getRemitterAccount().getAccountNumber());
             transactionRequest.failTransaction(recipientAccount, remitterAccount, TransactionType.REMIT);

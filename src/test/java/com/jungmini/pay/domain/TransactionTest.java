@@ -53,7 +53,7 @@ class TransactionTest {
             transactionRequest.successTransaction(null, remitterAccount, TransactionType.REMIT);
         });
 
-        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.ILLEGAL_TRANSACTION_STATE.toString());
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.ILLEGAL_TRANSACTION_STATE);
     }
 
     @Test
@@ -70,7 +70,7 @@ class TransactionTest {
             transactionRequest.successTransaction(remitterAccount, null, TransactionType.REMIT);
         });
 
-        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.ILLEGAL_TRANSACTION_STATE.toString());
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.ILLEGAL_TRANSACTION_STATE);
     }
 
     @Test
@@ -88,6 +88,6 @@ class TransactionTest {
             transactionRequest.successTransaction(recipientAccount, remitterAccount, TransactionType.REMIT);
         });
 
-        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.LACK_OF_BALANCE.toString());
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.LACK_OF_BALANCE);
     }
 }

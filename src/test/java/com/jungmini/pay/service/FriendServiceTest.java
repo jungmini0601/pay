@@ -82,8 +82,8 @@ public class FriendServiceTest {
             friendService.requestFriend(friendRequest);
         });
 
-        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.ALREADY_FRIENDS.toString());
-        assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.ALREADY_FRIENDS.getDescription().toString());
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.ALREADY_FRIENDS);
+        assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.ALREADY_FRIENDS.getDescription());
     }
 
     @Test
@@ -107,8 +107,8 @@ public class FriendServiceTest {
             friendService.requestFriend(friendRequest);
         });
 
-        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.FRIENDS_REQUEST_EXISTS.toString());
-        assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.FRIENDS_REQUEST_EXISTS.getDescription().toString());
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.FRIENDS_REQUEST_EXISTS);
+        assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.FRIENDS_REQUEST_EXISTS.getDescription());
     }
 
     @Test
@@ -123,8 +123,8 @@ public class FriendServiceTest {
             friendService.requestFriend(friendRequest);
         });
 
-        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.MEMBER_NOT_FOUND.toString());
-        assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.MEMBER_NOT_FOUND.getDescription().toString());
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.MEMBER_NOT_FOUND);
+        assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.MEMBER_NOT_FOUND.getDescription());
     }
 
 
@@ -142,8 +142,8 @@ public class FriendServiceTest {
             friendService.requestFriend(friendRequest);
         });
 
-        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.SELF_FRIEND_REQUEST.toString());
-        assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.SELF_FRIEND_REQUEST.getDescription().toString());
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.SELF_FRIEND_REQUEST);
+        assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.SELF_FRIEND_REQUEST.getDescription());
     }
 
     @Test
@@ -173,7 +173,7 @@ public class FriendServiceTest {
         PayException payException = assertThrows(PayException.class,
                 () -> friendService.acceptFriendRequest(1L));
 
-        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.BAD_REQUEST.toString());
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.BAD_REQUEST);
         assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.BAD_REQUEST.getDescription());
     }
 
@@ -201,7 +201,7 @@ public class FriendServiceTest {
         PayException payException = assertThrows(PayException.class,
                 () -> friendService.denyFriendRequest(1L));
 
-        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.BAD_REQUEST.toString());
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.BAD_REQUEST);
         assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.BAD_REQUEST.getDescription());
     }
 }

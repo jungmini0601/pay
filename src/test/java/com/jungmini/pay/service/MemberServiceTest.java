@@ -64,7 +64,7 @@ class MemberServiceTest {
             memberService.signUp(member);
         });
 
-        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.MEMBER_DUPLICATED.toString());
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.MEMBER_DUPLICATED);
         assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.MEMBER_DUPLICATED.getDescription());
     }
 
@@ -90,7 +90,7 @@ class MemberServiceTest {
             memberService.signin(member);
         });
 
-        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.MEMBER_NOT_FOUND.toString());
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.MEMBER_NOT_FOUND);
     }
 
     @Test
@@ -104,6 +104,6 @@ class MemberServiceTest {
             memberService.signin(member);
         });
 
-        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.PASSWORD_MISMATCH.toString());
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.PASSWORD_MISMATCH);
     }
 }
