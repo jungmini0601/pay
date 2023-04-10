@@ -13,7 +13,15 @@
 - Redis 캐싱을 이용한 성능향상(고민 중)
 - 메세지 큐를 이용한 예약 발송 기능(고민 중)
 
-### <a href="https://github.com/jungmini0601/pay/wiki">사용자 시나리오</a>
+### [사용자 시나리오](https://github.com/jungmini0601/pay/wiki)
+#### 회원, 친구
+![image](https://user-images.githubusercontent.com/126523988/230802866-5aa2c84e-5348-48b5-ba9a-1d3f8f948381.png)
+
+![image](https://user-images.githubusercontent.com/126523988/230802933-4977c85d-5d3f-499b-9d62-fc6757e5e762.png)
+
+#### 계좌, 거래
+![image](https://user-images.githubusercontent.com/126523988/230803093-47e7eb86-6c68-44d6-bdf6-ea9517b92726.png)
+
 
 ### 도메인 모델링
 ![image](https://user-images.githubusercontent.com/126523988/230802503-9c930685-3d1e-4e30-9018-87650465b3f6.png)
