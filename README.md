@@ -24,5 +24,5 @@
 
 
 ### 도메인 모델링
-![image](https://user-images.githubusercontent.com/126523988/230802503-9c930685-3d1e-4e30-9018-87650465b3f6.png)
+![image](https://user-images.githubusercontent.com/126523988/230804211-c3b1a954-7b92-44b2-a595-ca9ff4bd4e1b.png)
 
