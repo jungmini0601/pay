@@ -25,3 +25,11 @@
 
 ### 도메인 모델링
 ![image](https://user-images.githubusercontent.com/126523988/230804623-d2a8acdd-fc48-4f6c-85df-d49a69b631a1.png)
+
+### 추후 발전시킬 만한 내용
+- RSA 암호화나 SSL 적용
+- 예약 송금을 위한 메세지큐 적용
+- DB 암호화
+- DB 샤딩, 복제
+- 요구사항을 조금 더 복잡하게 한 후 언어 kotlin으로 전환
+- MSA 아키텍처 설계후 적용 해보기
