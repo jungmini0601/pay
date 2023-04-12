@@ -47,14 +47,6 @@ public class Transaction extends BaseTimeEntity {
         saveSnapshot();
     }
 
-    private void enrollTransactionResultType(TransactionResultType transactionResultType) {
-        this.transactionResultType = transactionResultType;
-    }
-
-    private void enrollTransactionType(TransactionType transactionType) {
-        this.transactionType = transactionType;
-    }
-
     public void successTransaction(Account recipientAccount, Account remitterAccount, TransactionType transactionType) {
         enrollRecipientAccount(recipientAccount);
         enrollRemitterAccount(remitterAccount);
@@ -63,6 +55,14 @@ public class Transaction extends BaseTimeEntity {
         validate();
         saveSnapshot();
         exChangeAmount();
+    }
+
+    private void enrollTransactionResultType(TransactionResultType transactionResultType) {
+        this.transactionResultType = transactionResultType;
+    }
+
+    private void enrollTransactionType(TransactionType transactionType) {
+        this.transactionType = transactionType;
     }
 
     private void enrollRecipientAccount(Account account) {
