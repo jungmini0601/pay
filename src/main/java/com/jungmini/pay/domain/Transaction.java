@@ -82,9 +82,14 @@ public class Transaction extends BaseTimeEntity {
             throw new PayException(ErrorCode.ILLEGAL_TRANSACTION_STATE);
         }
 
-        if (this.transactionType == TransactionType.CANCEL && this.amount > this.remitterAccount.getBalance()) {
+        if (this.transactionType == TransactionType.CANCEL) {
+            throw new PayException(ErrorCode.ILLEGAL_TRANSACTION_STATE);
+        }
+
+        if (this.amount > this.remitterAccount.getBalance()) {
             throw new PayException(ErrorCode.LACK_OF_BALANCE);
         }
+
     }
 
     private void saveSnapshot() {
