@@ -26,7 +26,8 @@ public class Transaction extends BaseTimeEntity {
     @Enumerated
     @EqualsAndHashCode.Exclude private TransactionResultType transactionResultType;
 
-    @EqualsAndHashCode.Exclude private long balanceSnapshot;
+    @EqualsAndHashCode.Exclude private long remitterBalanceSnapshot;
+    @EqualsAndHashCode.Exclude private long recipientBalanceSnapshot;
 
     @EqualsAndHashCode.Exclude private int amount;
 
@@ -87,7 +88,8 @@ public class Transaction extends BaseTimeEntity {
     }
 
     private void saveSnapshot() {
-        this.balanceSnapshot = this.remitterAccount.getBalance();
+        this.remitterBalanceSnapshot = this.remitterAccount.getBalance();
+        this.recipientBalanceSnapshot = this.recipientAccount.getBalance();
     }
 
     private void exChangeAmount() {

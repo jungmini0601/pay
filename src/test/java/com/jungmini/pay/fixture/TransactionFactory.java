@@ -22,7 +22,7 @@ public class TransactionFactory {
                 .amount(transaction.getAmount())
                 .transactionType(transaction.getTransactionType())
                 .transactionResultType(transaction.getTransactionResultType())
-                .balanceSnapshot(transaction.getBalanceSnapshot())
+                .remitterBalanceSnapshot(transaction.getRemitterBalanceSnapshot())
                 .build();
     }
 

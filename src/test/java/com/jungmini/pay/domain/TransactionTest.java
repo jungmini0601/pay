@@ -33,7 +33,7 @@ class TransactionTest {
         assertThat(transactionRequest.getTransactionType()).isEqualTo(TransactionType.REMIT);
         assertThat(transactionRequest.getTransactionResultType()).isEqualTo(TransactionResultType.SUCCESS);
         assertThat(transactionRequest.getRemitterAccount()).isEqualTo(remitterAccount);
-        assertThat(transactionRequest.getBalanceSnapshot()).isEqualTo(remitterBalance);
+        assertThat(transactionRequest.getRemitterBalanceSnapshot()).isEqualTo(remitterBalance);
         assertThat(transactionRequest.getAmount()).isEqualTo(amount);
         assertThat(transactionRequest.getRecipientAccount().getBalance()).isEqualTo(recipientBalance + amount);
         assertThat(transactionRequest.getRemitterAccount().getBalance()).isEqualTo(remitterBalance - amount);

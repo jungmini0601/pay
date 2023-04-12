@@ -20,7 +20,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -147,7 +146,8 @@ class AccountServiceTest {
         assertThat(savedTransaction.getTransactionType()).isEqualTo(TransactionType.REMIT);
         assertThat(savedTransaction.getTransactionResultType()).isEqualTo(TransactionResultType.SUCCESS);
         assertThat(savedTransaction.getRemitterAccount()).isEqualTo(remitterAccount);
-        assertThat(savedTransaction.getBalanceSnapshot()).isEqualTo(remitterBalance);
+        assertThat(savedTransaction.getRemitterBalanceSnapshot()).isEqualTo(remitterBalance);
+        assertThat(savedTransaction.getRecipientBalanceSnapshot()).isEqualTo(recipientBalance);
         assertThat(savedTransaction.getAmount()).isEqualTo(amount);
         assertThat(savedTransaction.getRecipientAccount().getBalance()).isEqualTo(recipientBalance + amount);
         assertThat(savedTransaction.getRemitterAccount().getBalance()).isEqualTo(remitterBalance - amount);
