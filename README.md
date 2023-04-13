@@ -7,9 +7,8 @@
 ### 프로젝트 달성 성과 (계속 업데이트 예정)
 - [테스트 커버리지 라인96% 브렌치 86% 달성](https://github.com/jungmini0601/pay/pull/50)
 - Jenkins, Ansible, Kubernates, SonarQube를 이용한 CI/CD 파이프라인 구축 (배포 자동화 파이프라인 및 아키텍처 그림 추가 예정)
-- 인덱스 설계를 통한 성능향상(성능 분석표 추가 예정)
-- 서버 다중화를 통한 성능향상(성능 분석표 추가 예정)
-- 동시성 이슈 해결(PR 링크 추가 예정)
+- 인덱스 설계(쿼리랑, 실행계획 링크 작성
+- 동시성 이슈 해결(PR 링크 추가 예정, 블로그 링크 추가 예정)
 
 ### [사용자 시나리오](https://github.com/jungmini0601/pay/wiki)
 #### [회원, 친구 시나리오](https://github.com/jungmini0601/pay/wiki/%ED%9A%8C%EC%9B%90-%EC%8B%9C%EB%82%98%EB%A6%AC%EC%98%A4)
