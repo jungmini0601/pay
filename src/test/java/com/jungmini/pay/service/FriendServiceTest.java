@@ -23,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class FriendServiceTest {
@@ -87,6 +88,29 @@ public class FriendServiceTest {
     }
 
     @Test
+    @DisplayName("친구 요청 실패 - 이미 친구인 경우 역 방향")
+    void create_friend_request_fail_already_friends_reverse() {
+        FriendRequest friendRequest = FriendRequestFactory.friendRequest();
+
+        given(memberRepository.findById(friendRequest.getRecipient().getEmail()))
+                .willReturn(Optional.of(friendRequest.getRecipient()));
+
+        given(memberRepository.findById(friendRequest.getRequester().getEmail()))
+                .willReturn(Optional.of(friendRequest.getRequester()));
+
+        when(friendRepository.existsFriendByRecipientAndRequester(any(), any()))
+                .thenReturn(false)
+                .thenReturn(true);
+
+        PayException payException = assertThrows(PayException.class, () -> {
+            friendService.requestFriend(friendRequest);
+        });
+
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.ALREADY_FRIENDS);
+        assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.ALREADY_FRIENDS.getDescription());
+    }
+
+    @Test
     @DisplayName("친구 요청 실패 - 친구 요청이 존재하는 경우")
     void create_friend_request_fail_friend_request_exists() {
         FriendRequest friendRequest = FriendRequestFactory.friendRequest();
@@ -102,6 +126,29 @@ public class FriendServiceTest {
 
         given(friendRequestRepository.existsFriendRequestByRecipientAndRequester(any(), any()))
                 .willReturn(true);
+
+        PayException payException = assertThrows(PayException.class, () -> {
+            friendService.requestFriend(friendRequest);
+        });
+
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.FRIENDS_REQUEST_EXISTS);
+        assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.FRIENDS_REQUEST_EXISTS.getDescription());
+    }
+
+    @Test
+    @DisplayName("친구 요청 실패 - 친구 요청이 존재하는 경우 역방향")
+    void create_friend_request_fail_friend_request_exists_reverse() {
+        FriendRequest friendRequest = FriendRequestFactory.friendRequest();
+
+        given(memberRepository.findById(friendRequest.getRecipient().getEmail()))
+                .willReturn(Optional.of(friendRequest.getRecipient()));
+
+        given(memberRepository.findById(friendRequest.getRequester().getEmail()))
+                .willReturn(Optional.of(friendRequest.getRequester()));
+
+        when(friendRequestRepository.existsFriendRequestByRecipientAndRequester(any(), any()))
+                .thenReturn(true)
+                .thenReturn(false);
 
         PayException payException = assertThrows(PayException.class, () -> {
             friendService.requestFriend(friendRequest);
