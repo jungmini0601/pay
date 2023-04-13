@@ -21,7 +21,8 @@
 
 
 ### 도메인 모델링
-![image](https://user-images.githubusercontent.com/126523988/230804623-d2a8acdd-fc48-4f6c-85df-d49a69b631a1.png)
+![image](https://user-images.githubusercontent.com/126523988/231641050-3d402f7d-f075-4a84-bb95-6126782cdc1c.png)
+
 
 ### 추후 발전시킬 만한 내용
 - RSA 암호화나 SSL 적용
