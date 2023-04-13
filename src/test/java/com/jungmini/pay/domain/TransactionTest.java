@@ -33,7 +33,7 @@ class TransactionTest {
         assertThat(transactionRequest.getTransactionType()).isEqualTo(TransactionType.REMIT);
         assertThat(transactionRequest.getTransactionResultType()).isEqualTo(TransactionResultType.SUCCESS);
         assertThat(transactionRequest.getRemitterAccount()).isEqualTo(remitterAccount);
-        assertThat(transactionRequest.getBalanceSnapshot()).isEqualTo(remitterBalance);
+        assertThat(transactionRequest.getRemitterBalanceSnapshot()).isEqualTo(remitterBalance);
         assertThat(transactionRequest.getAmount()).isEqualTo(amount);
         assertThat(transactionRequest.getRecipientAccount().getBalance()).isEqualTo(recipientBalance + amount);
         assertThat(transactionRequest.getRemitterAccount().getBalance()).isEqualTo(remitterBalance - amount);
@@ -89,5 +89,23 @@ class TransactionTest {
         });
 
         assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.LACK_OF_BALANCE);
+    }
+
+    @Test
+    @DisplayName("송금 실패 - 트랜잭션 타입 cancel")
+    void create_transaction_fail_transaction_type_not_remit() {
+        int amount = 500;
+        Member remitter = MemberFactory.memberFrom("remitter@test.com");
+        Member recipient = MemberFactory.memberFrom("recipient@test.com");
+        Account remitterAccount = AccountFactory.accountFromOwnerAndBalance(remitter, 10000);
+        Account recipientAccount = AccountFactory.accountFromOwnerAndBalance(recipient, 100);
+        Transaction transactionRequest = TransactionFactory
+                .transactionRequest(remitterAccount, recipientAccount, amount);
+
+        PayException payException = assertThrows(PayException.class, () -> {
+            transactionRequest.successTransaction(recipientAccount, remitterAccount, TransactionType.CANCEL);
+        });
+
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.ILLEGAL_TRANSACTION_STATE);
     }
 }

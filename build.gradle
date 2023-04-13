@@ -19,6 +19,11 @@ configurations {
     }
 }
 
+jacoco {
+    toolVersion = "0.8.8"
+    reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
@@ -49,45 +54,17 @@ test {
 }
 
 jacocoTestReport {
-    dependsOn test // 리포트는 테스트가 끝난 후에 측정한다.
-    finalizedBy jacocoTestCoverageVerification
-}
-
-jacocoTestCoverageVerification {
-    dependsOn jacocoTestReport
-}
-
-jacoco {
-    toolVersion = "0.8.8"
-    reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
-}
-
-jacocoTestReport {
     reports {
         xml.required = false
         csv.required = false
         html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
     }
+
+    finalizedBy jacocoTestCoverageVerification // 리포트는 테스트가 끝난 후에 측정한다.
 }
 
 jacocoTestCoverageVerification {
     violationRules {
-        rule {
-            // 'element'가 없으면 프로젝트의 전체 파일을 합친 값을 기준으로 합니다.
-            // 위의 리포트에서 'Total'로 표시된 부분입니다.
-            limit {
-                // 'counter'를 지정하지 않으면 default는 'INSTRUCTION'
-                // 'value'를 지정하지 않으면 default는 'COVEREDRATIO'
-                minimum = 0.30
-            }
-
-            includes = [
-                    '**/domain/**',
-                    '**/service/**',
-                    '**/web/**',
-            ]
-        }
-
         // 여러 룰을 생성할 수 있습니다.
         rule {
             // 룰을 간단히 켜고 끌 수 있습니다.
@@ -98,29 +75,29 @@ jacocoTestCoverageVerification {
 
             // 브랜치 커버리지를 최소한 90% 만족시켜야 합니다.
             limit {
-                counter = 'BRANCH'
-                value = 'COVEREDRATIO'
-                minimum = 0.90
+                counter = "BRANCH"
+                value = "COVEREDRATIO"
+                minimum = "0.90".toBigDecimal()
             }
 
             // 라인 커버리지를 최소한 80% 만족시켜야 합니다.
             limit {
-                counter = 'LINE'
-                value = 'COVEREDRATIO'
-                minimum = 0.80
+                counter = "LINE"
+                value = "COVEREDRATIO"
+                minimum = "0.80".toBigDecimal()
             }
 
             // 빈 줄을 제외한 코드의 라인수를 최대 200라인으로 제한합니다.
             limit {
-                counter = 'LINE'
-                value = 'TOTALCOUNT'
-                maximum = 200
+                counter = "LINE"
+                value = "TOTALCOUNT"
+                maximum = "200".toBigDecimal()
             }
 
-            includes = [
-                    '**/domain/**',
-                    '**/service/**',
-                    '**/web/**',
+            excludes = [
+                    '*.*Application',
+                    '*.common.*',
+                    '*.dto.*',
             ]
         }
     }

@@ -70,4 +70,29 @@ class AccountTest {
         assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.REQUESTER_IS_NOT_OWNER);
         assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.REQUESTER_IS_NOT_OWNER.getDescription());
     }
+
+    @Test
+    @DisplayName("계좌 번호 검증 - 숫자아닌 문자가 포함된 경우")
+    void validate_account_character_not_number() {
+        String invalidAccountNumber = "a12345678911";
+        PayException payException = assertThrows(PayException.class,
+                () -> Account.validateAccountNumber(invalidAccountNumber));
+
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.ILLEGAL_ACCOUNT_NUMBER);
+        assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.ILLEGAL_ACCOUNT_NUMBER.getDescription());
+    }
+
+    @Test
+    @DisplayName("잔액 낮추기 실패 - 잔액 부족")
+    void minus_balance_fail_lack_of_balance() {
+
+        Account account = AccountFactory
+                .accountFromOwnerAndBalance(MemberFactory.member(), 10000);
+
+        PayException payException = assertThrows(PayException.class,
+                () -> account.minusAmount(Integer.MAX_VALUE));
+
+        assertThat(payException.getErrorCode()).isEqualTo(ErrorCode.LACK_OF_BALANCE);
+        assertThat(payException.getErrorMessage()).isEqualTo(ErrorCode.LACK_OF_BALANCE.getDescription());
+    }
 }
