@@ -5,6 +5,7 @@ import com.jungmini.pay.domain.Member;
 import com.jungmini.pay.domain.Transaction;
 
 import com.jungmini.pay.common.resolover.SigninMember;
+import com.jungmini.pay.service.LockService;
 import com.jungmini.pay.web.dto.AccountDTO;
 import com.jungmini.pay.service.AccountService;
 
@@ -22,6 +23,7 @@ import java.util.List;
 public class AccountController {
 
     private final AccountService accountService;
+    private final LockService lockService;
 
     @PostMapping("/accounts")
     public ResponseEntity<AccountDTO.CreateAccountResponse> createAccount(
@@ -37,23 +39,32 @@ public class AccountController {
     public ResponseEntity<AccountDTO.ChargePointResponse> chargePoint(
             @RequestBody @Valid AccountDTO.ChargePointRequest chargePointRequest,
             @SigninMember Member member) {
+        try {
+            lockService.lock(chargePointRequest.getAccountNumber());
+            Account account = accountService
+                    .chargePoint(chargePointRequest.getAmount(), chargePointRequest, member);
 
-        Account account = accountService
-                .chargePoint(chargePointRequest.getAmount(), chargePointRequest, member);
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(AccountDTO.ChargePointResponse.from(account));
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(AccountDTO.ChargePointResponse.from(account));
+        } finally {
+            lockService.unlock(chargePointRequest.getAccountNumber());
+        }
     }
 
     @PostMapping("/accounts/remit")
     public ResponseEntity<AccountDTO.RemitResponse> remit(
         @RequestBody @Valid AccountDTO.RemitRequest remitRequest,
         @SigninMember Member remitter) {
-
-        Transaction transaction = accountService.remit(remitRequest.toTransaction(), remitter);
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(AccountDTO.RemitResponse.from(transaction));
+        try {
+            lockService.lock(remitRequest.getRecipientsAccountNumber());
+            lockService.lock(remitRequest.getRemitterAccountNumber());
+            Transaction transaction = accountService.remit(remitRequest.toTransaction(), remitter);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(AccountDTO.RemitResponse.from(transaction));
+        } finally {
+            lockService.unlock(remitRequest.getRecipientsAccountNumber());
+            lockService.unlock(remitRequest.getRemitterAccountNumber());
+        }
     }
 
     @GetMapping("/accounts/{accountNumber}")
