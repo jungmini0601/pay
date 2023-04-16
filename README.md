@@ -34,3 +34,4 @@
 - 요구사항을 조금 더 복잡하게 한 후 언어 kotlin으로 전환
 - MSA 아키텍처 설계후 적용 해보기
 - 클린 아키텍처 적용
+- ansible/k8s/jenkins/sonarqube 인프라 적용 해보기
