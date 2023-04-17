@@ -31,6 +31,7 @@
 - [테스트 커버리지 라인97% 브렌치 93% 달성](https://github.com/jungmini0601/pay/pull/50)
 - [이슈](https://github.com/jungmini0601/pay/issues?q=is%3Aissue+is%3Aclosed)
 - [PR](https://github.com/jungmini0601/pay/pulls?q=is%3Apr+is%3Aclosed)
+- star 7개 감사합니다.
 
 ### 추후 발전시킬 만한 내용
 - RSA 암호화나 SSL 적용
