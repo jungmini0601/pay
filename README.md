@@ -22,6 +22,11 @@
 - [비즈니스 로직은 Service에서 가져가야 하는지 domain에서 가져가야 하는지?](https://github.com/jungmini0601/pay/issues/26)
 - 이번 프로젝트에서 객체지향 설계가 제대로 되었는지?(코드 리뷰 내용 블로그 추가 예정)
 
+### 사용한 전략
+- [브렌치 관리 전략](https://jungmini-laboratory.tistory.com/26)
+- [단위 테스트 통합 테스트 블랙 박스 테스팅을 이용한 테스트 전략](https://jungmini-laboratory.tistory.com/28)
+- [부하 테스트 전략 (시간상의 이유로 진행 X)](https://jungmini-laboratory.tistory.com/32)
+
 ### 프로젝트 결과
 - [테스트 커버리지 라인97% 브렌치 93% 달성](https://github.com/jungmini0601/pay/pull/50)
 
