@@ -17,13 +17,13 @@
 #### [계좌, 거래 시나리오](https://github.com/jungmini0601/pay/wiki/%EA%B3%84%EC%A2%8C-%EC%8B%9C%EB%82%98%EB%A6%AC%EC%98%A4)
 ![image](https://user-images.githubusercontent.com/126523988/230803093-47e7eb86-6c68-44d6-bdf6-ea9517b92726.png)
 
+## 주요 이슈 사항
+- [송금 및 충전 기능에서 Serializable 격리 수준을 어떻게 구현 할 것인지?](https://jungmini-laboratory.tistory.com/35)
+- [비즈니스 로직은 Service에서 가져가야 하는지 domain에서 가져가야 하는지?](https://github.com/jungmini0601/pay/issues/26)
+- 이번 프로젝트에서 객체지향 설계가 제대로 되었는지?(코드 리뷰 내용 블로그 추가 예정)
+
 ### 프로젝트 결과
-- 객체지향적으로 잘 작성되었는지 확인하기 위하여 당근마켓 주니어 엔지니어님, 카카오페이 테크리드 엔지니어님에게 코드리뷰 요청
-  - MVC 아키텍처의 한계점에 대해 전수 받았습니다 -> 현재 구조에서는 domain의 변경이 발생할 경우 변경의 여파가 너무 퍼지는 단점이 존재합니다. 
-  - 클린 아키텍처라는 서적을 추천 받았습니다.
 - [테스트 커버리지 라인97% 브렌치 93% 달성](https://github.com/jungmini0601/pay/pull/50)
-- [동시성 이슈 해결 PR](https://github.com/jungmini0601/pay/pull/56/commits/78f0758947e5da74739a1b555bc70f7fab071d17)
-- [동시성 이슈 해결을 위한 학습](https://jungmini-laboratory.tistory.com/35)
 
 ### 추후 발전시킬 만한 내용
 - RSA 암호화나 SSL 적용
@@ -32,5 +32,5 @@
 - DB 샤딩, 복제
 - 요구사항을 조금 더 복잡하게 한 후 언어 kotlin으로 전환
 - MSA 아키텍처 설계후 적용 해보기
-- 클린 아키텍처 적용
+- DDD/핵사고날 아키텍처 CQRS등 적용
 - ansible/k8s/jenkins/sonarqube 인프라 적용 해보기
