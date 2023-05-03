@@ -42,3 +42,4 @@
 - MSA 아키텍처 설계후 적용 해보기
 - DDD/핵사고날 아키텍처 CQRS등 적용
 - ansible/k8s/jenkins/sonarqube 인프라 적용 해보기
+- 푸쉬 시스템과 조합하여 메일 발송 기능 처리 연습 해보기
