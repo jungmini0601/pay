@@ -28,7 +28,7 @@
 - [단위 테스트 통합 테스트 블랙 박스 테스팅을 이용한 테스트 전략](https://jungmini-laboratory.tistory.com/28)
 - [부하 테스트 전략 (시간상의 이유로 진행 X)](https://jungmini-laboratory.tistory.com/32)
 
-### 프로젝트 진행중
+### 프로젝트 임시 중단 (1차 목표 달성)
 - [테스트 커버리지 라인97% 브렌치 93% 달성](https://github.com/jungmini0601/pay/pull/50)
 - [이슈](https://github.com/jungmini0601/pay/issues?q=is%3Aissue+is%3Aclosed)
 - [PR](https://github.com/jungmini0601/pay/pulls?q=is%3Apr+is%3Aclosed)
