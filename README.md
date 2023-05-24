@@ -26,19 +26,8 @@
 ### 사용한 전략
 - [브렌치 관리 전략](https://jungmini-laboratory.tistory.com/26)
 - [단위 테스트 통합 테스트 블랙 박스 테스팅을 이용한 테스트 전략](https://jungmini-laboratory.tistory.com/28)
-- [부하 테스트 전략 (시간상의 이유로 진행 X)](https://jungmini-laboratory.tistory.com/32)
 
 ### 프로젝트 임시 중단 (1차 목표 달성)
 - [테스트 커버리지 라인97% 브렌치 93% 달성](https://github.com/jungmini0601/pay/pull/50)
 - [이슈](https://github.com/jungmini0601/pay/issues?q=is%3Aissue+is%3Aclosed)
 - [PR](https://github.com/jungmini0601/pay/pulls?q=is%3Apr+is%3Aclosed)
-
-### 추후 발전시킬 만한 내용
-- RSA 암호화나 SSL 적용
-- DB 암호화
-- DB 샤딩, 복제
-- 요구사항을 조금 더 복잡하게 한 후 언어 kotlin으로 전환
-- MSA 설계후 적용 해보기
-- 클린/핵사고날 아키텍처 학습 후 적용
-- ansible/k8s/jenkins/sonarqube 인프라 적용 해보기
-- 푸쉬 시스템과 조합하여 메일 발송 기능 처리 연습 해보기
