@@ -20,8 +20,6 @@
 ## 주요 이슈 사항
 - [송금 및 충전 기능에서 Serializable 격리 수준을 어떻게 구현 할 것인지?](https://jungmini-laboratory.tistory.com/56)
 - [비즈니스 로직은 Service에서 가져가야 하는지 domain에서 가져가야 하는지?](https://github.com/jungmini0601/pay/issues/26)
-- [이번 프로젝트에서 객체지향 설계가 제대로 되었는지? 인프런 코드 리뷰](https://jungmini-laboratory.tistory.com/42)
-- 친구 목록을 캐싱한다면 DB에는 언제 어떻게 동기화 해야 하는지?
 
 ### 사용한 전략
 - [브렌치 관리 전략](https://jungmini-laboratory.tistory.com/26)
