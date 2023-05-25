@@ -22,7 +22,7 @@
 - [브렌치 관리 전략](https://jungmini-laboratory.tistory.com/26)
 - [단위 테스트 통합 테스트 블랙 박스 테스팅을 이용한 테스트 전략](https://jungmini-laboratory.tistory.com/28)
 
-### 프로젝트 임시 중단 (1차 목표 달성)
-- [테스트 커버리지 라인97% 브렌치 93% 달성](https://github.com/jungmini0601/pay/pull/50)
+### 프로젝트 종료
+- [테스트 커버리지 라인97% 브렌치 93%](https://github.com/jungmini0601/pay/pull/50)
 - [이슈](https://github.com/jungmini0601/pay/issues?q=is%3Aissue+is%3Aclosed)
 - [PR](https://github.com/jungmini0601/pay/pulls?q=is%3Apr+is%3Aclosed)
